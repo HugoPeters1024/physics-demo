@@ -217,14 +217,15 @@ public:
   }
 };
 
-class Ray {
-public:
-  Vector3 origin, dir;
-  float length;
+struct Ray {
+    Vector3 origin;
+    Vector3 dir;
+    float length;
 
-  Ray() {}
-  Ray(Vector3 origin, Vector3 dir) : origin(origin), dir(dir) {}
+    Ray(Vector3 origin, Vector3 dir)
+            : origin(origin), dir(dir), length(std::numeric_limits<float>::infinity()) {}
 };
+
 
 class Plane {
 public:

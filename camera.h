@@ -18,6 +18,7 @@ public:
    Matrix4 getMatrix() const { return matrix; }
    Vector3 getPosition() const { return pos; }
    void setPosition(Vector3 v) { pos = v; }
+   Ray getRay(float u, float v) const;
 };
 
 
@@ -104,4 +105,17 @@ void Camera::calcMatrix(float screenRatio)
   Matrix4 r = Matrix4::FromAxisRotations(phi, theta, 0);
   matrix = p * r * t;
 }
+
+Ray Camera::getRay(float u, float v) const
+{
+  assert(abs(viewDir.z) < 0.999);
+  Vector3 tangent = Vector3::cross(viewDir, Vector3(0,0,1));
+  Vector3 bitangent = Vector3::cross(viewDir, tangent);
+
+  Vector3 center = pos + fov * viewDir;
+  Vector3 point = center + u * tangent - v * bitangent;
+  Vector3 dir = (point - pos).normalized();
+  return {pos, dir};
+}
+
 }

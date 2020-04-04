@@ -2,9 +2,9 @@
 
 int main() {
 
-  Renderer renderer;
+  std::unique_ptr<IRenderer> renderer = std::make_unique<Rasterizer>();
   Camera::Camera camera(1.4f);
-  Keyboards::Keyboard keyboard(renderer.getWindowPointer());
+  Keyboards::Keyboard keyboard(renderer->getWindowPointer());
 
   rp3d::Vector3 gravity(0, -1.9f, 0);
   rp3d::DynamicsWorld world(gravity);
@@ -24,19 +24,19 @@ int main() {
   floorMaterial.setBounciness(rp3d::decimal(0.6));
   floorMaterial.setFrictionCoefficient(0.1);
 
-  const rp3d::Vector3 floorHalfExtends(1, 0.2, 1);
+  const rp3d::Vector3 floorHalfExtends(10, 0.2, 10);
   rp3d::BoxShape floorShape(floorHalfExtends);
   rp3d::ProxyShape* floorProxy = floorBody->addCollisionShape(&floorShape, floorTransform, 0);
 
-  renderer.addObject(new Cube(0.5, 0.5, 0.5), cubeProxy);
-  renderer.addObject(new Cube(1, 0.2, 1), floorProxy);
+  renderer->addObject(new Cube(0.5, 0.5, 0.5), cubeProxy);
+  renderer->addObject(new Cube(10, 0.2, 10), floorProxy);
 
-  while(!renderer.shouldClose())
+  while(!renderer->shouldClose())
   {
     world.update(1.0/60.0);
     keyboard.swapBuffers();
-    camera.update(renderer.getWindowRatio(), &keyboard);
-    renderer.loop(camera.getMatrix());
+    camera.update(renderer->getWindowRatio(), &keyboard);
+    renderer->loop(camera);
 //    printf("%s\n", body->getLinearVelocity().to_string().c_str());
 
   }

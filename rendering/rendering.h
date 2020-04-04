@@ -5,30 +5,47 @@ void error_callback(int error, const char* description)
   fprintf(stderr, "Error: %s\n", description);
 }
 
-class Renderer
+class IRenderer
 {
-private:
-    Logger m_logger = Logger("Renderer");
+public:
+    virtual void loop(const Camera::Camera& camera) = 0;
+    virtual GLFWwindow* getWindowPointer() const = 0;
+    virtual bool shouldClose() = 0;
+    virtual float getWindowRatio() const = 0;
+    virtual void addObject(IMesh* mesh, rp3d::ProxyShape* proxy) = 0;
+};
+
+class GLFWRenderer : public IRenderer
+{
+protected:
     GLFWwindow* m_window;
     int m_window_width;
     int m_window_height;
+public:
+    inline bool shouldClose() override { return glfwWindowShouldClose(m_window); }
+    inline GLFWwindow* getWindowPointer() const override { return m_window; }
+    inline float getWindowRatio() const override { return (float)m_window_width / (float)m_window_height; }
+};
+
+class Rasterizer : public GLFWRenderer
+{
+private:
+    Logger m_logger = Logger("Renderer");
     GLuint m_shader;
     std::vector<std::pair<IMesh*, rp3d::ProxyShape*>> m_scene;
 public:
-    Renderer();
-    ~Renderer() {
+    Rasterizer();
+    ~Rasterizer() {
       m_logger.logDebug("Cleaning up...");
       glfwDestroyWindow(m_window);
       glfwTerminate();
     }
-    void loop(const Matrix4& camera);
-    inline bool shouldClose() { return glfwWindowShouldClose(m_window); }
-    inline GLFWwindow* getWindowPointer() const { return m_window; }
-    inline float getWindowRatio() const { return (float)m_window_width / (float)m_window_height; }
-    inline void addObject(IMesh* mesh, rp3d::ProxyShape* proxy) { m_scene.emplace_back(mesh, proxy); }
+    void loop(const Camera::Camera& camera) override;
+    inline GLFWwindow* getWindowPointer() const override { return m_window; }
+    inline void addObject(IMesh* mesh, rp3d::ProxyShape* proxy) override { m_scene.emplace_back(mesh, proxy); }
 };
 
-Renderer::Renderer() {
+Rasterizer::Rasterizer() {
   if (!glfwInit())
   {
     m_logger.logError("Could not initialize GLFW");
@@ -61,7 +78,7 @@ Renderer::Renderer() {
   m_logger.logDebug("Initialized");
 }
 
-void Renderer::loop(const Matrix4& camera) {
+void Rasterizer::loop(const Camera::Camera& camera) {
   glfwGetFramebufferSize(m_window, &m_window_width, &m_window_height);
   glViewport(0, 0, m_window_width, m_window_height);
 
@@ -69,7 +86,7 @@ void Renderer::loop(const Matrix4& camera) {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   mat4x4 cam_matrix;
-  camera.unpack(cam_matrix);
+  camera.getMatrix().unpack(cam_matrix);
   glUniformMatrix4fv(SH_UNIFORM_CAMERA, 1, GL_FALSE, (const GLfloat*)(cam_matrix));
 
   for (auto &obj : m_scene) {
