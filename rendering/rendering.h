@@ -22,6 +22,10 @@ protected:
     int m_window_width;
     int m_window_height;
 public:
+    ~GLFWRenderer() {
+      glfwDestroyWindow(m_window);
+      glfwTerminate();
+    }
     inline bool shouldClose() override { return glfwWindowShouldClose(m_window); }
     inline GLFWwindow* getWindowPointer() const override { return m_window; }
     inline float getWindowRatio() const override { return (float)m_window_width / (float)m_window_height; }
@@ -35,11 +39,6 @@ private:
     std::vector<std::pair<IMesh*, rp3d::ProxyShape*>> m_scene;
 public:
     Rasterizer();
-    ~Rasterizer() {
-      m_logger.logDebug("Cleaning up...");
-      glfwDestroyWindow(m_window);
-      glfwTerminate();
-    }
     void loop(const Camera::Camera& camera) override;
     inline GLFWwindow* getWindowPointer() const override { return m_window; }
     inline void addObject(IMesh* mesh, rp3d::ProxyShape* proxy) override { m_scene.emplace_back(mesh, proxy); }

@@ -19,8 +19,9 @@ namespace shaders
       void main()
       {
         vec4 worldPos = uMvp * vec4(vPos, 1.0);
+        vec3 worldNormal = (uMvp * vec4(vNormal,0)).xyz;
         gl_Position = uCamera * worldPos;
-        color = abs(vNormal);
+        color = (max(dot(normalize(vec3(1,1,0)), worldNormal) ,0)* 0.6 + 0.4) * vec3(1);
       }
     )";
 
