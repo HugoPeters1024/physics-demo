@@ -1,4 +1,5 @@
 #define SH_IN_VPOS 0
+#define SH_IN_VNORMAL 1
 #define SH_UNIFORM_CAMERA 0
 #define SH_UNIFORM_MVP 1
 
@@ -8,6 +9,7 @@ namespace shaders
       #version 450
 
       layout(location = 0) in vec3 vPos;
+      layout(location = 1) in vec3 vNormal;
 
       layout(location = 0) uniform mat4 uCamera;
       layout(location = 1) uniform mat4 uMvp;
@@ -18,7 +20,7 @@ namespace shaders
       {
         vec4 worldPos = uMvp * vec4(vPos, 1.0);
         gl_Position = uCamera * worldPos;
-        color = abs(worldPos.xyz)*2;
+        color = abs(vNormal);
       }
     )";
 

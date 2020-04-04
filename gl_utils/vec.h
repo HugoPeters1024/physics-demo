@@ -185,6 +185,30 @@ public:
     mat4x4_perspective(r, fov, ratio, znear, zfar);
     return Matrix4(r);
   }
+  static Matrix4 FromArray(const float* data)
+  {
+    mat4x4 r;
+    r[0][0] = data[0];
+    r[0][1] = data[1];
+    r[0][2] = data[2];
+    r[0][3] = data[3];
+
+    r[1][0] = data[4];
+    r[1][1] = data[5];
+    r[1][2] = data[6];
+    r[1][3] = data[7];
+
+    r[2][0] = data[8];
+    r[2][1] = data[9];
+    r[2][2] = data[10];
+    r[2][3] = data[11];
+
+    r[3][0] = data[12];
+    r[3][1] = data[13];
+    r[3][2] = data[14];
+    r[3][3] = data[15];
+    return Matrix4(r);
+  }
   void print() const {
     for(int i=0; i<4; i++) {
       printf("%f, %f, %f, %f\n", data[0][i], data[1][i], data[2][i], data[3][i]);

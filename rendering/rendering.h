@@ -13,7 +13,7 @@ private:
     int m_window_width;
     int m_window_height;
     GLuint m_shader;
-    std::vector<std::unique_ptr<IMesh>> m_scene;
+    std::vector<std::pair<IMesh*, rp3d::ProxyShape*>> m_scene;
 public:
     Renderer();
     ~Renderer() {
@@ -21,10 +21,11 @@ public:
       glfwDestroyWindow(m_window);
       glfwTerminate();
     }
-    void loop(const Matrix4 camera);
+    void loop(const Matrix4& camera);
     inline bool shouldClose() { return glfwWindowShouldClose(m_window); }
     inline GLFWwindow* getWindowPointer() const { return m_window; }
     inline float getWindowRatio() const { return (float)m_window_width / (float)m_window_height; }
+    inline void addObject(IMesh* mesh, rp3d::ProxyShape* proxy) { m_scene.emplace_back(mesh, proxy); }
 };
 
 Renderer::Renderer() {
@@ -57,12 +58,10 @@ Renderer::Renderer() {
   auto fs = CompileShader(GL_FRAGMENT_SHADER, shaders::fs_src);
   m_shader = GenerateProgram(vs, fs);
 
-  m_scene.push_back(std::make_unique<Cube>());
-
   m_logger.logDebug("Initialized");
 }
 
-void Renderer::loop(const Matrix4 camera) {
+void Renderer::loop(const Matrix4& camera) {
   glfwGetFramebufferSize(m_window, &m_window_width, &m_window_height);
   glViewport(0, 0, m_window_width, m_window_height);
 
@@ -73,11 +72,11 @@ void Renderer::loop(const Matrix4 camera) {
   camera.unpack(cam_matrix);
   glUniformMatrix4fv(SH_UNIFORM_CAMERA, 1, GL_FALSE, (const GLfloat*)(cam_matrix));
 
-  for (auto&& obj : m_scene) {
-    obj->m_rot.y += 0.01f;
-    obj->m_rot.x += 0.012f;
-   // obj->m_pos.z += 0.01f;
-    obj->draw();
+  for (auto &obj : m_scene) {
+    float mvp[16];
+    obj.second->getLocalToWorldTransform().getOpenGLMatrix(mvp);
+    auto sMvp = Matrix4::FromArray(mvp);
+    obj.first->draw(sMvp);
   }
   glfwSwapBuffers(m_window);
   glfwPollEvents();

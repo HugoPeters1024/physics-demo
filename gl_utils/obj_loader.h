@@ -61,10 +61,7 @@ class cObj {
   public:
     cObj(std::string filename);
     ~cObj() {};
-    void renderVertexBuffer(float* buffer);
-    void renderIndexBufferBytes(GLubyte* buffer);
-    inline int vertexCount() { return vertices.size(); }
-    inline int faceCount() { return faces.size(); }
+    void renderVertexBufferWithNormalsBytes(std::vector<float> &vbo, std::vector<GLubyte> &indices);
 };
 
 cObj::cObj(std::string filename) {
@@ -141,22 +138,54 @@ cObj::cObj(std::string filename) {
     std::cout << "              Faces: " << faces.size() << std::endl << std::endl;
 }
 
-void cObj::renderVertexBuffer(float *buffer) {
-  for(int i=0; i<vertices.size(); i++)
-  {
-    buffer[3*i+0] = vertices[i].v[0];
-    buffer[3*i+1] = vertices[i].v[1];
-    buffer[3*i+2] = vertices[i].v[2];
-  }
-}
+struct float6 {
+    float x,y,z,nx,ny,nz;
+};
 
-void cObj::renderIndexBufferBytes(GLubyte *buffer) {
+void cObj::renderVertexBufferWithNormalsBytes(std::vector<float> &vbo, std::vector<GLubyte> &indices) {
+  vbo.clear();
+  indices.clear();
+  std::map<GLubyte, float6> visited;
+  int q=0;
   for(int i=0; i<faces.size(); i++)
   {
-    buffer[3*i+0] = faces[i].vertex[0];
-    buffer[3*i+1] = faces[i].vertex[1];
-    buffer[3*i+2] = faces[i].vertex[2];
+    for(int j=0; j<3; j++)
+    {
+      auto vIndex = faces[i].vertex[j];
+      auto nIndex = faces[i].normal[j];
+      float6 data = {
+        vertices[vIndex].v[0],
+        vertices[vIndex].v[1],
+        vertices[vIndex].v[2],
+        normals[nIndex].v[0],
+        normals[nIndex].v[1],
+        normals[nIndex].v[2],
+      };
+      auto tryInsert = visited.insert(std::pair<GLubyte, float6>(q, data));
+      if (tryInsert.second)
+      {
+        // New vertex, add it, refer to it.
+        vbo.push_back(tryInsert.first->second.x);
+        vbo.push_back(tryInsert.first->second.y);
+        vbo.push_back(tryInsert.first->second.z);
+        vbo.push_back(tryInsert.first->second.nx);
+        vbo.push_back(tryInsert.first->second.ny);
+        vbo.push_back(tryInsert.first->second.nz);
+        indices.push_back(q);
+        q++;
+        if (q==0) {
+          g_logError("Indices of model do not fit in an ubyte, use ints");
+          exit(-6);
+        }
+      }
+      else{
+        // Existing vertex, only refer to it.
+        indices.push_back(tryInsert.first->first);
+      }
+    }
   }
+
+  g_logDebug("Converted vbo contains %u entries and has %u indices referring", vbo.size()/6, indices.size());
 }
 
 
