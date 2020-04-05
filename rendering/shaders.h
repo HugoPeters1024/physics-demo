@@ -41,8 +41,8 @@ namespace shaders
       void main()
       {
           vec3 materialColor = vec3(1);
-          vec3 lightPos = vec3(10*sin(uTime), 10, 10*cos(uTime));
-          vec3 lightCol = vec3(1, 0.8, 0.4) * 100;
+          vec3 lightPos = vec3(10*sin(uTime), 40, 10*cos(uTime));
+          vec3 lightCol = vec3(1, 0.8, 0.4) * 1000;
 
           vec3 lightRay = lightPos - fragPos;
           float lightDis2 = dot(lightRay, lightRay);

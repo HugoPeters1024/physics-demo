@@ -11,6 +11,7 @@ public:
     virtual bool shouldClose() = 0;
     virtual float getWindowRatio() const = 0;
     virtual void addCube(rp3d::ProxyShape* shape, rp3d::BoxShape* box) = 0;
+    virtual void addHeightMap(rp3d::ProxyShape* shape, rp3d::HeightFieldShape* map, float* data) = 0;
 };
 
 class GLFWRenderer : public IRenderer
@@ -41,6 +42,7 @@ public:
     void loop(const Camera::Camera& camera) override;
     inline GLFWwindow* getWindowPointer() const override { return m_window; }
     inline void addCube(rp3d::ProxyShape* shape, rp3d::BoxShape* box) override { m_scene.push_back(new CubeObject(meshRepo.get(), shape, box)); }
+    inline void addHeightMap(rp3d::ProxyShape* shape, rp3d::HeightFieldShape* map, float* data) override { m_scene.push_back(new HeightFieldObject(shape, map, data)); }
 };
 
 Rasterizer::Rasterizer() {

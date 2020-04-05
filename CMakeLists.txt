@@ -3,6 +3,7 @@ set(OpenGL_GL_PREFERENCE GLVND)
 project(physics)
 
 set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "-Werror=return-type")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 

@@ -25,6 +25,8 @@
 #include "rendering/meshrepo.h"
 #include "rendering/sceneobject.h"
 #include "rendering/rendering.h"
+#include "generate/perlin.cpp"
+#include "generate/heightmap.h"
 
 #include <vector>
 
