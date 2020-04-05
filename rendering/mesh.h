@@ -1,6 +1,7 @@
 class IMesh {
+protected:
 public:
-    virtual void draw(Matrix4& mvp) const = 0;
+    virtual void draw(const Matrix4& mvp) const = 0;
 };
 
 class Triangle2D : public IMesh {
@@ -31,7 +32,7 @@ private:
       glDeleteVertexArrays(1, &m_vao);
       glDeleteBuffers(1, &m_vbo);
     }
-    void draw(Matrix4& mvp) const override {
+    void draw(const Matrix4& mvp) const override {
       glBindVertexArray(m_vao);
       mat4x4 e_mvp;
       mvp.unpack(e_mvp);
@@ -48,10 +49,8 @@ private:
     GLuint m_vbo;
     GLuint m_veb;
     GLuint m_index_count;
-    Vector3 m_size;
 public:
-    Cube(float sx, float sy, float sz) {
-      m_size = Vector3(sx, sy, sz)*2;
+    Cube() {
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
@@ -82,8 +81,7 @@ public:
       glBindVertexArray(0);
     }
 
-    void draw(Matrix4& mvp) const override {
-      mvp = mvp * Matrix4::FromScale(m_size);
+    void draw(const Matrix4& mvp) const override {
       glBindVertexArray(m_vao);
       mat4x4 e_mvp;
       mvp.unpack(e_mvp);
@@ -92,3 +90,4 @@ public:
       glBindVertexArray(0);
     }
 };
+

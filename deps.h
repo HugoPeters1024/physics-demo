@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <set>
 
 #define GL_GLEXT_PROTOTYPES 1
@@ -21,6 +22,8 @@
 #include "camera.h"
 #include "rendering/shaders.h"
 #include "rendering/mesh.h"
+#include "rendering/meshrepo.h"
+#include "rendering/sceneobject.h"
 #include "rendering/rendering.h"
 
 #include <vector>

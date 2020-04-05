@@ -2,6 +2,7 @@
 #define SH_IN_VNORMAL 1
 #define SH_UNIFORM_CAMERA 0
 #define SH_UNIFORM_MVP 1
+#define SH_UNIFORM_CAMERA_POS 2
 
 namespace shaders
 {
@@ -13,6 +14,7 @@ namespace shaders
 
       layout(location = 0) uniform mat4 uCamera;
       layout(location = 1) uniform mat4 uMvp;
+      layout(location = 2) uniform vec3 uCamPos;
 
       out vec3 color;
 

@@ -16,13 +16,12 @@ int main() {
   const rp3d::Vector3 cubeHalfExtends(0.5, 0.5, 0.5);
   rp3d::BoxShape boxShape(cubeHalfExtends);
   rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 0.4);
-  renderer->addObject(new Cube(0.5, 0.5, 0.5), cubeProxy);
+  renderer->addCube(cubeProxy, &boxShape);
 
   rp3d::Transform floorTransform(rp3d::Vector3(0,-1,0), rp3d::Quaternion().identity());
   rp3d::RigidBody* floorBody = world.createRigidBody(floorTransform);
   floorBody->setType(reactphysics3d::BodyType::KINEMATIC);
-  floorBody->setAngularVelocity(rp3d::Vector3(0, 0, 0
-  ));
+  floorBody->setAngularVelocity(rp3d::Vector3(0, 0, 0));
   rp3d::Material& floorMaterial = floorBody->getMaterial();
   floorMaterial.setBounciness(rp3d::decimal(0.3));
   floorMaterial.setFrictionCoefficient(0.8);
@@ -30,18 +29,17 @@ int main() {
   const rp3d::Vector3 floorHalfExtends(10, 0.2, 10);
   rp3d::BoxShape floorShape(floorHalfExtends);
   rp3d::ProxyShape* floorProxy = floorBody->addCollisionShape(&floorShape, floorTransform, 0);
-  renderer->addObject(new Cube(10, 0.2, 10), floorProxy);
+  renderer->addCube(floorProxy, &floorShape);
 
   int tick=1;
   while(!renderer->shouldClose())
   {
-    if (tick++%30 == 0)
+    if (tick++%45 == 0)
     {
-      printf("spawn!\n");
       rp3d::Transform cubeTransform(rp3d::Vector3(0,5,0), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
       rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
       rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, tick/30);
-      renderer->addObject(new Cube(0.5, 0.5, 0.5), cubeProxy);
+      renderer->addCube(cubeProxy, &boxShape);
     }
     world.update(1.0/60.0);
     keyboard.swapBuffers();
@@ -50,7 +48,6 @@ int main() {
 //    printf("%s\n", body->getLinearVelocity().to_string().c_str());
 
   }
-
   return 0;
 }
 
