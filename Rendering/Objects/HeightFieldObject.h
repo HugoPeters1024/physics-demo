@@ -3,16 +3,16 @@ class HeightFieldObject : public ISceneObject {
     const rp3d::ProxyShape* m_shape;
     const rp3d::HeightFieldShape* m_map;
 public:
-    HeightFieldObject(const rp3d::ProxyShape* shape, const rp3d::HeightFieldShape* map, float* data)
+    HeightFieldObject(const ResourceRepo* repo, const rp3d::ProxyShape* shape, const rp3d::HeightFieldShape* map, float* data)
     {
-       m_shape = shape;
+        m_shape = shape;
         m_map = map;
         rp3d::Vector3 min, max;
         map->getLocalBounds(min, max);
-        m_mesh = std::make_unique<HeightFieldMesh>(data, map->getNbRows(), map->getNbColumns(), max.y - min.y);
+        m_mesh = std::make_unique<HeightFieldMesh>(data, map->getNbRows(), map->getNbColumns(), max.y - min.y, repo->getDefaultShader());
       }
 
-    void draw() const override {
-        m_mesh->draw(getMvp(m_shape) * Matrix4::FromScale(Vector3(m_map->getScaling())));
+    void draw(const Camera::Camera* camera) const override {
+        m_mesh->draw(camera, getMvp(m_shape) * Matrix4::FromScale(Vector3(m_map->getScaling())));
     }
 };

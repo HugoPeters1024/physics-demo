@@ -142,7 +142,7 @@ LINMATH_H_DEFINE_VEC(4, x, y, z, w);
 #ifndef LINMATH_H_NO_BUILDERS
 	/*
 	  NOTE: There's no macros for plain vectors constant initializers.
-	  Use default C syntax for this purpose:
+	  use default C syntax for this purpose:
 	    vec2 v_xy = {x,y};
 	    vec3 v_xyz = {x,y,z};
 	    vec4 v_xyzw = {x,y,z,w};

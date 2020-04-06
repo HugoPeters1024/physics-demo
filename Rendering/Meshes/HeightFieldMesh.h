@@ -4,6 +4,7 @@ private:
     GLuint m_vao;
     GLuint m_vbo;
     GLuint m_vertex_count;
+    const DefaultShader* m_shader;
     static Vector3 normalAverage(std::vector<Vector3> input)
     {
       Vector3 acc(0);
@@ -14,8 +15,9 @@ private:
       return acc / input.size();
     }
 public:
-    HeightFieldMesh(float* data, int width, int height, int thickness)
+    HeightFieldMesh(float* data, int width, int height, int thickness, const DefaultShader* shader)
     {
+      m_shader = shader;
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
@@ -123,18 +125,16 @@ public:
       glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
       glBufferData(GL_ARRAY_BUFFER, width * height * 6 * 6 * sizeof(float), vbo_data.data(), GL_STATIC_DRAW);
 
-      glEnableVertexAttribArray(SH_IN_VPOS);
-      glEnableVertexAttribArray(SH_IN_VNORMAL);
-      glVertexAttribPointer(SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 0));
-      glVertexAttribPointer(SH_IN_VNORMAL, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 3));
+      glEnableVertexAttribArray(DefaultShader::SH_IN_VPOS);
+      glEnableVertexAttribArray(DefaultShader::SH_IN_VNORMAL);
+      glVertexAttribPointer(DefaultShader::SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 0));
+      glVertexAttribPointer(DefaultShader::SH_IN_VNORMAL, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 3));
       glBindVertexArray(0);
 
     }
-    void draw(const Matrix4& mvp) const {
+    void draw(const Camera::Camera* camera, const Matrix4& mvp) const {
       glBindVertexArray(m_vao);
-      mat4x4 e_mvp;
-      mvp.unpack(e_mvp);
-      glUniformMatrix4fv(SH_UNIFORM_MVP, 1, GL_FALSE, (const GLfloat*)e_mvp);
+      m_shader->use(camera, mvp);
       glDrawArrays(GL_TRIANGLES, 0, m_vertex_count);
       glBindVertexArray(0);
     }

@@ -7,6 +7,6 @@ protected:
       return Matrix4::FromArray(mvp);
     }
 public:
-    virtual void draw() const = 0;
+    virtual void draw(const Camera::Camera* camera) const = 0;
 };
 

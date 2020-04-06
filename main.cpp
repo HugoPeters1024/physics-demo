@@ -48,7 +48,7 @@ int main() {
     world.update(1.0/60.0);
     keyboard.swapBuffers();
     camera.update(renderer->getWindowRatio(), &keyboard);
-    renderer->loop(camera);
+    renderer->loop(&camera);
 //    printf("%s\n", body->getLinearVelocity().to_string().c_str());
 
   }

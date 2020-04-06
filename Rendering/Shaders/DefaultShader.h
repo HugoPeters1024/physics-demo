@@ -1,13 +1,4 @@
-#define SH_IN_VPOS 0
-#define SH_IN_VNORMAL 1
-#define SH_UNIFORM_CAMERA 0
-#define SH_UNIFORM_MVP 1
-#define SH_UNIFORM_CAMERA_POS 2
-#define SH_UNIFORM_TIME 3
-
-namespace ShaderSources
-{
-    static const char* vs_src = R"(
+static const char* vs_src = R"(
       #version 450
 
       layout(location = 0) in vec3 vPos;
@@ -28,7 +19,7 @@ namespace ShaderSources
       }
     )";
 
-    static const char* fs_src = R"(
+static const char* fs_src = R"(
       #version 450
 
       layout(location = 2) uniform vec3 uCamPos;
@@ -58,4 +49,46 @@ namespace ShaderSources
           color = ambient * materialColor + (diffuse + spec) * materialColor * lightCol * falloff;
       }
     )";
-}
+
+class DefaultShader {
+private:
+    GLuint m_program;
+public:
+    DefaultShader() {
+      GLuint vs = CompileShader(GL_VERTEX_SHADER, vs_src);
+      GLuint fs = CompileShader(GL_FRAGMENT_SHADER, fs_src);
+      m_program = GenerateProgram(vs, fs);
+    }
+    void use(const Camera::Camera* camera, const Matrix4& mvp) const {
+      glUseProgram(m_program);
+
+      mat4x4 e_camera;
+      camera->getMatrix().unpack(e_camera);
+      glUniformMatrix4fv(SH_UN_CAMERA, 1, GL_FALSE, (const GLfloat*)e_camera);
+
+      mat4x4 e_mvp;
+      mvp.unpack(e_mvp);
+      glUniformMatrix4fv(SH_UN_MVP, 1, GL_FALSE, (const GLfloat*)e_mvp);
+
+      Vector3 camPos = camera->getPosition();
+      glUniform3f(SH_UN_CAMERA_POS, camPos.x, camPos.y, camPos.z);
+
+      glUniform1f(SH_UN_TIME, glfwGetTime());
+    }
+    static int SH_IN_VPOS;
+    static int SH_IN_VNORMAL;
+
+    static int SH_UN_CAMERA;
+    static int SH_UN_MVP;
+    static int SH_UN_CAMERA_POS;
+    static int SH_UN_TIME;
+};
+
+int DefaultShader::SH_IN_VPOS = 0;
+int DefaultShader::SH_IN_VNORMAL = 1;
+
+int DefaultShader::SH_UN_CAMERA = 0;
+int DefaultShader::SH_UN_MVP = 1;
+int DefaultShader::SH_UN_CAMERA_POS = 2;
+int DefaultShader::SH_UN_TIME = 3;
+
