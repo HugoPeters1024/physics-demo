@@ -7,14 +7,15 @@ class Camera
 private:
    float fov;
    float gravity;
-   Vector3 pos, viewDir;
-   Vector3 velocity;
+   Vector3 viewDir;
    Matrix4 matrix;
    void calcMatrix(float ratio);
 
 public:
    Camera(float fov);
    void update(float ratio, Keyboard* keyboard);
+   Vector3 pos;
+    Vector3 velocity;
    Matrix4 getMatrix() const { return matrix; }
    Vector3 getPosition() const { return pos; }
    void setPosition(Vector3 v) { pos = v; }
@@ -26,22 +27,16 @@ Camera::Camera(float fov)
 {
   viewDir = Vector3(0, 0, -1); 
   this->fov = fov;
-  gravity = 0.05f;
+  gravity = 0.01f;
 }
 
 void Camera::update(float ratio, Keyboard* keyboard)
 {
-  if (pos.y + velocity.y > 17) {
-    pos += velocity;
-    velocity.y -= gravity;
-  } else {
-    velocity.y = 0;
-  }
+  pos += velocity;
+  velocity += Vector3(0, -gravity, 0);
 
-  if (keyboard->isPressed(JUMP)) {
-      velocity.y += 1;
-  }
-
+  if (keyboard->isPressed(JUMP))
+    velocity.y = 0.5f;
   float speed = 0.1f;
   float rot_speed = 0.02f;
 

@@ -20,6 +20,7 @@
 #include "gl_utils/obj_loader.h"
 #include "keyboard.h"
 #include "camera.h"
+#include "RayCastCacher.h"
 #include "Rendering/Shaders/_deps.h"
 #include "Rendering/Meshes/_deps.h"
 #include "Rendering/ResourceRepo.h"
