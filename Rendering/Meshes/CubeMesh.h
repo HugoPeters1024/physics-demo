@@ -6,9 +6,12 @@ private:
     GLuint m_veb;
     GLuint m_index_count;
     const DefaultShader* m_shader;
+    Material m_material;
 public:
     CubeMesh(const DefaultShader* shader) {
       m_shader = shader;
+      m_material.diffuseColor = Vector3(0.6, 0.7, 0.6);
+      m_material.specular = 1;
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
@@ -41,7 +44,7 @@ public:
 
     void draw(const Camera::Camera* camera, const Matrix4& mvp) const {
       glBindVertexArray(m_vao);
-      m_shader->use(camera, mvp);
+      m_shader->use(camera, mvp, m_material);
       glDrawElements(GL_TRIANGLES, m_index_count, GL_UNSIGNED_BYTE, (void*)nullptr);
       glBindVertexArray(0);
     }

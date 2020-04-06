@@ -5,6 +5,7 @@ private:
     GLuint m_vbo;
     GLuint m_vertex_count;
     const DefaultShader* m_shader;
+    Material m_material;
     static Vector3 normalAverage(std::vector<Vector3> input)
     {
       Vector3 acc(0);
@@ -18,6 +19,8 @@ public:
     HeightFieldMesh(float* data, int width, int height, int thickness, const DefaultShader* shader)
     {
       m_shader = shader;
+      m_material.diffuseColor = Vector3(1);
+      m_material.specular = 0;
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
@@ -134,7 +137,7 @@ public:
     }
     void draw(const Camera::Camera* camera, const Matrix4& mvp) const {
       glBindVertexArray(m_vao);
-      m_shader->use(camera, mvp);
+      m_shader->use(camera, mvp, m_material);
       glDrawArrays(GL_TRIANGLES, 0, m_vertex_count);
       glBindVertexArray(0);
     }

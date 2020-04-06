@@ -24,6 +24,8 @@ static const char* fs_src = R"(
 
       layout(location = 2) uniform vec3 uCamPos;
       layout(location = 3) uniform float uTime;
+      layout(location = 4) uniform vec3 uMaterialColor;
+      layout(location = 5) uniform float uMaterialSpecular;
 
       in vec3 fragPos;
       in vec3 fragNormal;
@@ -31,9 +33,8 @@ static const char* fs_src = R"(
 
       void main()
       {
-          vec3 materialColor = vec3(1);
-          vec3 lightPos = vec3(10*sin(uTime), 40, 10*cos(uTime));
-          vec3 lightCol = vec3(1, 0.8, 0.4) * 1000;
+          vec3 lightPos = vec3(10*sin(uTime), 20, 10*cos(uTime));
+          vec3 lightCol = vec3(1) * 500;
 
           vec3 lightRay = lightPos - fragPos;
           float lightDis2 = dot(lightRay, lightRay);
@@ -43,10 +44,10 @@ static const char* fs_src = R"(
 
           vec3 eye = normalize(fragPos - uCamPos);
           vec3 refl = normalize(reflect(eye, fragNormal));
-          float spec = pow(max(dot(refl, lightNormal), 0), 30) * 0.75;
+          float spec = pow(max(dot(refl, lightNormal), 0), 30) * uMaterialSpecular;
 
           float ambient = 0.1f;
-          color = ambient * materialColor + (diffuse + spec) * materialColor * lightCol * falloff;
+          color = ambient * uMaterialColor + (diffuse + spec) * uMaterialColor * lightCol * falloff;
       }
     )";
 
@@ -59,7 +60,7 @@ public:
       GLuint fs = CompileShader(GL_FRAGMENT_SHADER, fs_src);
       m_program = GenerateProgram(vs, fs);
     }
-    void use(const Camera::Camera* camera, const Matrix4& mvp) const {
+    void use(const Camera::Camera* camera, const Matrix4& mvp, const Material& material) const {
       glUseProgram(m_program);
 
       mat4x4 e_camera;
@@ -74,6 +75,9 @@ public:
       glUniform3f(SH_UN_CAMERA_POS, camPos.x, camPos.y, camPos.z);
 
       glUniform1f(SH_UN_TIME, glfwGetTime());
+
+      glUniform3f(SH_UN_MATERIAL_COLOR, material.diffuseColor.x, material.diffuseColor.y, material.diffuseColor.z);
+      glUniform1f(SH_UN_MATERIAL_SPECULAR, material.specular);
     }
     static int SH_IN_VPOS;
     static int SH_IN_VNORMAL;
@@ -82,6 +86,8 @@ public:
     static int SH_UN_MVP;
     static int SH_UN_CAMERA_POS;
     static int SH_UN_TIME;
+    static int SH_UN_MATERIAL_COLOR;
+    static int SH_UN_MATERIAL_SPECULAR;
 };
 
 int DefaultShader::SH_IN_VPOS = 0;
@@ -91,4 +97,6 @@ int DefaultShader::SH_UN_CAMERA = 0;
 int DefaultShader::SH_UN_MVP = 1;
 int DefaultShader::SH_UN_CAMERA_POS = 2;
 int DefaultShader::SH_UN_TIME = 3;
+int DefaultShader::SH_UN_MATERIAL_COLOR = 4;
+int DefaultShader::SH_UN_MATERIAL_SPECULAR = 5;
 
