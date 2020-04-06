@@ -5,7 +5,7 @@
 #define SH_UNIFORM_CAMERA_POS 2
 #define SH_UNIFORM_TIME 3
 
-namespace shaders
+namespace ShaderSources
 {
     static const char* vs_src = R"(
       #version 450

@@ -1,35 +1,3 @@
-void error_callback(int error, const char* description)
-{
-  fprintf(stderr, "Error: %s\n", description);
-}
-
-class IRenderer
-{
-public:
-    virtual void loop(const Camera::Camera& camera) = 0;
-    virtual GLFWwindow* getWindowPointer() const = 0;
-    virtual bool shouldClose() = 0;
-    virtual float getWindowRatio() const = 0;
-    virtual void addCube(rp3d::ProxyShape* shape, rp3d::BoxShape* box) = 0;
-    virtual void addHeightMap(rp3d::ProxyShape* shape, rp3d::HeightFieldShape* map, float* data) = 0;
-};
-
-class GLFWRenderer : public IRenderer
-{
-protected:
-    GLFWwindow* m_window;
-    int m_window_width;
-    int m_window_height;
-public:
-    ~GLFWRenderer() {
-      glfwDestroyWindow(m_window);
-      glfwTerminate();
-    }
-    inline bool shouldClose() override { return glfwWindowShouldClose(m_window); }
-    inline GLFWwindow* getWindowPointer() const override { return m_window; }
-    inline float getWindowRatio() const override { return (float)m_window_width / (float)m_window_height; }
-};
-
 class Rasterizer : public GLFWRenderer
 {
 private:
@@ -72,8 +40,8 @@ Rasterizer::Rasterizer() {
   glfwSwapInterval(1);
 
   meshRepo = std::make_shared<MeshRepo>();
-  auto vs = CompileShader(GL_VERTEX_SHADER, shaders::vs_src);
-  auto fs = CompileShader(GL_FRAGMENT_SHADER, shaders::fs_src);
+  auto vs = CompileShader(GL_VERTEX_SHADER, ShaderSources::vs_src);
+  auto fs = CompileShader(GL_FRAGMENT_SHADER, ShaderSources::fs_src);
   m_shader = GenerateProgram(vs, fs);
 
   m_logger.logDebug("Initialized");
