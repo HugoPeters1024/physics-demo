@@ -63,10 +63,10 @@ public:
       std::vector<float> vbo_data;
       for(int y=0; y<height-1; y++) {
         for (int x = 0; x < width - 1; x++) {
-          int x0 = x, y0 = y;
-          int x1 = x + 1, y1 = y;
-          int x2 = x + 1, y2 = y + 1;
-          int x3 = x, y3 = y + 1;
+          int x3 = x, y3 = y;
+          int x2 = x + 1, y2 = y;
+          int x1 = x + 1, y1 = y + 1;
+          int x0 = x, y0 = y + 1;
 
           auto v0 = vertices[x0 + y0 * width];
           auto v1 = vertices[x1 + y1 * width];

@@ -28,7 +28,7 @@ int main() {
   const rp3d::Vector3 floorHalfExtends(10, 0.2, 10);
   rp3d::BoxShape floorShape(floorHalfExtends);
   float* heightFieldData = generateHeightMap(100, 100, 20);
-  rp3d::HeightFieldShape heightField(100, 100, 0, 30, heightFieldData, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE);
+  rp3d::HeightFieldShape heightField(100, 100, 0, 30, heightFieldData, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE, 1);
   rp3d::ProxyShape* floorProxy = floorBody->addCollisionShape(&heightField, rp3d::Transform::identity(), 0);
   renderer->addHeightMap(floorProxy, &heightField, heightFieldData);
   //renderer->addCube(floorProxy, &floorShape);

@@ -34,7 +34,7 @@ Rasterizer::Rasterizer() {
   glfwMakeContextCurrent(m_window);
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
-  glDisable(GL_CULL_FACE);
+  glEnable(GL_CULL_FACE);
 
   glfwSwapInterval(1);
 
