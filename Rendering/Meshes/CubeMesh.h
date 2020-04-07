@@ -15,7 +15,7 @@ public:
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
-      auto obj = cObj("cube.obj");
+      auto obj = cObj("Models/cube.obj");
 
       //float vertices[obj.vertexCount()*6];
       //GLubyte indices[obj.faceCount()*3];

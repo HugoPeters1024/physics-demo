@@ -1,9 +1,9 @@
-class RayCastCacher : public rp3d::RaycastCallback
+class CameraRayCaster : public rp3d::RaycastCallback
 {
 public:
     rp3d::RaycastInfo m_info;
     Camera::Camera* m_camera;
-    RayCastCacher(Camera::Camera* camera)
+    CameraRayCaster(Camera::Camera* camera)
     {
       m_camera = camera;
     }

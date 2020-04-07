@@ -3,7 +3,7 @@
 int main() {
 
   std::unique_ptr<IRenderer> renderer = std::make_unique<Rasterizer>();
-  Camera::Camera camera(1.4f);
+  Camera::Camera camera(0.8f);
   Keyboards::Keyboard keyboard(renderer->getWindowPointer());
 
   rp3d::Vector3 gravity(0, -9.81f, 0);
@@ -50,7 +50,7 @@ int main() {
     camera.update(renderer->getWindowRatio(), &keyboard);
     Vector3 camPos = camera.getPosition();
     rp3d::Ray ray(rp3d::Vector3(camPos.x, 100, camPos.z), rp3d::Vector3(camPos.x, -100, camPos.z));
-    RayCastCacher cacher(&camera);
+    CameraRayCaster cacher(&camera);
     world.raycast(ray, &cacher);
     renderer->loop(&camera);
 //    printf("%s\n", body->getLinearVelocity().to_string().c_str());
