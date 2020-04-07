@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <unordered_set>
 
 #include "vec.h"
 
@@ -62,6 +63,7 @@ class cObj {
     cObj(std::string filename);
     ~cObj() {};
     void renderVertexBufferWithNormalsBytes(std::vector<float> &vbo, std::vector<GLubyte> &indices);
+    void renderVertexBufferWithNormalsInts(std::vector<float> &vbo, std::vector<uint> &indices);
 };
 
 cObj::cObj(std::string filename) {
@@ -142,11 +144,33 @@ struct float6 {
     float x,y,z,nx,ny,nz;
 };
 
-void cObj::renderVertexBufferWithNormalsBytes(std::vector<float> &vbo, std::vector<GLubyte> &indices) {
+inline bool operator ==(const float6& lhs, const float6& rhs) {
+  return lhs.x == rhs.x &&
+         lhs.y == rhs.y &&
+         lhs.z == rhs.z &&
+         lhs.nx == rhs.nx &&
+         lhs.ny == rhs.ny &&
+         lhs.nz == rhs.nz;
+};
+
+struct hashfn {
+    std::size_t operator() (const float6 &vertex) const
+    {
+      std::size_t hx = std::hash<float>()(vertex.x);
+      std::size_t hy = std::hash<float>()(vertex.y);
+      std::size_t hz = std::hash<float>()(vertex.z);
+      std::size_t hnx = std::hash<float>()(vertex.nx);
+      std::size_t hny = std::hash<float>()(vertex.ny);
+      std::size_t hnz = std::hash<float>()(vertex.nz);
+      return hx ^ hy ^ hz ^ hnx ^ hny ^ hnz;
+    }
+};
+
+void cObj::renderVertexBufferWithNormalsInts(std::vector<float> &vbo, std::vector<uint> &indices) {
   vbo.clear();
   indices.clear();
-  std::map<GLubyte, float6> visited;
-  int q=0;
+  std::unordered_map<float6, GLuint, hashfn> visited;
+  GLuint q=0;
   for(int i=0; i<faces.size(); i++)
   {
     for(int j=0; j<3; j++)
@@ -154,33 +178,33 @@ void cObj::renderVertexBufferWithNormalsBytes(std::vector<float> &vbo, std::vect
       auto vIndex = faces[i].vertex[j];
       auto nIndex = faces[i].normal[j];
       float6 data = {
-        vertices[vIndex].v[0],
-        vertices[vIndex].v[1],
-        vertices[vIndex].v[2],
-        normals[nIndex].v[0],
-        normals[nIndex].v[1],
-        normals[nIndex].v[2],
+              vertices[vIndex].v[0],
+              vertices[vIndex].v[1],
+              vertices[vIndex].v[2],
+              normals[nIndex].v[0],
+              normals[nIndex].v[1],
+              normals[nIndex].v[2],
       };
-      auto tryInsert = visited.insert(std::pair<GLubyte, float6>(q, data));
+      auto tryInsert = visited.insert(std::pair<float6, GLuint>(data, q));
       if (tryInsert.second)
       {
         // New vertex, add it, refer to it.
-        vbo.push_back(tryInsert.first->second.x);
-        vbo.push_back(tryInsert.first->second.y);
-        vbo.push_back(tryInsert.first->second.z);
-        vbo.push_back(tryInsert.first->second.nx);
-        vbo.push_back(tryInsert.first->second.ny);
-        vbo.push_back(tryInsert.first->second.nz);
+        vbo.push_back(tryInsert.first->first.x);
+        vbo.push_back(tryInsert.first->first.y);
+        vbo.push_back(tryInsert.first->first.z);
+        vbo.push_back(tryInsert.first->first.nx);
+        vbo.push_back(tryInsert.first->first.ny);
+        vbo.push_back(tryInsert.first->first.nz);
         indices.push_back(q);
         q++;
         if (q==0) {
-          g_logError("Indices of model do not fit in an ubyte, use ints");
+          g_logError("Indices of model do not fit in an uint, what?");
           exit(-6);
         }
       }
       else{
         // Existing vertex, only refer to it.
-        indices.push_back(tryInsert.first->first);
+        indices.push_back(tryInsert.first->second);
       }
     }
   }

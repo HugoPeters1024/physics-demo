@@ -18,25 +18,28 @@ int main() {
   rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 0.4);
   renderer->addCube(cubeProxy, &boxShape);
 
+  rp3d::SphereShape sphereShape(0.6f);
+
   rp3d::Transform floorTransform(rp3d::Vector3(0,-5,0), rp3d::Quaternion().identity());
   rp3d::RigidBody* floorBody = world.createRigidBody(floorTransform);
   floorBody->setType(reactphysics3d::BodyType::KINEMATIC);
   floorBody->setAngularVelocity(rp3d::Vector3(0, 0, 0));
   rp3d::Material& floorMaterial = floorBody->getMaterial();
-  floorMaterial.setBounciness(rp3d::decimal(0.0));
+  floorMaterial.setBounciness(rp3d::decimal(0.2));
   floorMaterial.setFrictionCoefficient(1.0);
   const rp3d::Vector3 floorHalfExtends(10, 0.2, 10);
   rp3d::BoxShape floorShape(floorHalfExtends);
-  float* heightFieldData = generateHeightMap(100, 100, 20);
-  rp3d::HeightFieldShape heightField(100, 100, 0, 30, heightFieldData, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE, 1);
+  float* heightFieldData = generateHeightMap(200, 200, 4);
+  rp3d::HeightFieldShape heightField(200, 200, 0, 4, heightFieldData, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE, 1);
   rp3d::ProxyShape* floorProxy = floorBody->addCollisionShape(&heightField, rp3d::Transform::identity(), 0);
   renderer->addHeightMap(floorProxy, &heightField, heightFieldData);
 
   int tick=1;
   while(!renderer->shouldClose())
   {
-    if (tick++%50 == 0)
+    if (tick++%60 == 0)
     {
+      /*
       rp3d::Transform cubeTransform(rp3d::Vector3(10*sin(glfwGetTime()),5,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
       rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
       rp3d::Material &cubeMaterial = cubeBody->getMaterial();
@@ -44,6 +47,15 @@ int main() {
       cubeMaterial.setFrictionCoefficient(1);
       rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
       renderer->addCube(cubeProxy, &boxShape);
+       */
+
+      rp3d::Transform sphereTransform(rp3d::Vector3(10*sin(glfwGetTime()),5,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
+      rp3d::RigidBody* sphereBody = world.createRigidBody(sphereTransform);
+      rp3d::Material &sphereMaterial = sphereBody->getMaterial();
+      sphereMaterial.setBounciness(0.0);
+      sphereMaterial.setFrictionCoefficient(1);
+      rp3d::ProxyShape* sphereProxy = sphereBody->addCollisionShape(&sphereShape, cubeTransform, 100);
+      renderer->addSphere(sphereProxy, &sphereShape);
     }
     world.update(1.0/60.0);
     keyboard.swapBuffers();

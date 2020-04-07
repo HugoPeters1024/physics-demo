@@ -9,6 +9,7 @@ public:
     void loop(const Camera::Camera* camera) override;
     inline GLFWwindow* getWindowPointer() const override { return m_window; }
     inline void addCube(rp3d::ProxyShape* shape, rp3d::BoxShape* box) override { m_scene.push_back(new CubeObject(resourceRepo.get(), shape, box)); }
+    inline void addSphere(rp3d::ProxyShape* shape, rp3d::SphereShape* sphere) override { m_scene.push_back(new SphereObject(resourceRepo.get(), shape, sphere)); }
     inline void addHeightMap(rp3d::ProxyShape* shape, rp3d::HeightFieldShape* map, float* data) override { m_scene.push_back(new HeightFieldObject(resourceRepo.get(), shape, map, data)); }
 };
 

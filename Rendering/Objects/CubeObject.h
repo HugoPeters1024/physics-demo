@@ -1,6 +1,6 @@
 class CubeObject : public ISceneObject {
 private:
-    const CubeMesh* m_mesh;
+    const GenericMesh* m_mesh;
     const DefaultShader* m_shader;
     const rp3d::ProxyShape* m_shape;
     const rp3d::BoxShape* m_box;
