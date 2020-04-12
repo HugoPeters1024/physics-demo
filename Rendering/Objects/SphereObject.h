@@ -13,7 +13,7 @@ public:
     }
 
     void draw(const Camera::Camera* camera) const override {
-      m_mesh->draw(camera, getMvp(m_shape) * Matrix4::FromScale(Vector3(m_sphere->getRadius()/14)));
+      m_mesh->draw(camera, getMvp(m_shape) * Matrix4::FromScale(Vector3(m_sphere->getRadius()/18.737)));
     }
 };
 
