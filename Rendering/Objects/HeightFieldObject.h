@@ -9,7 +9,7 @@ public:
         m_map = map;
         rp3d::Vector3 min, max;
         map->getLocalBounds(min, max);
-        m_mesh = std::make_unique<HeightFieldMesh>(data, map->getNbRows(), map->getNbColumns(), max.y - min.y, repo->getDefaultShader());
+        m_mesh = std::make_unique<HeightFieldMesh>(data, map->getNbRows(), map->getNbColumns(), max.y - min.y, repo->getGBufferShader());
       }
 
     void draw(const Camera::Camera* camera) const override {

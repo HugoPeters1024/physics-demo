@@ -5,11 +5,11 @@ private:
     GLuint m_vbo;
     GLuint m_veb;
     GLuint m_index_count;
-    const DefaultShader* m_shader;
+    const GBufferShader* m_shader;
     Material m_material;
 
 public:
-    GenericMesh(const char* modelFile, const DefaultShader* shader) {
+    GenericMesh(const char* modelFile, const GBufferShader* shader) {
       m_shader = shader;
       m_material.diffuseColor = Vector3(0.6, 0.7, 0.6);
       m_material.specular = 1;
@@ -35,10 +35,10 @@ public:
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_veb);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
 
-      glEnableVertexAttribArray(DefaultShader::SH_IN_VPOS);
-      glEnableVertexAttribArray(DefaultShader::SH_IN_VNORMAL);
-      glVertexAttribPointer(DefaultShader::SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 0));
-      glVertexAttribPointer(DefaultShader::SH_IN_VNORMAL, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 3));
+      glEnableVertexAttribArray(m_shader->SH_IN_VPOS);
+      glEnableVertexAttribArray(m_shader->SH_IN_VNORMAL);
+      glVertexAttribPointer(m_shader->SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 0));
+      glVertexAttribPointer(m_shader->SH_IN_VNORMAL, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 3));
       glVertexArrayElementBuffer(m_vao, m_veb);
       glBindVertexArray(0);
     }

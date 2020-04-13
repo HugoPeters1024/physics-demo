@@ -5,7 +5,7 @@ private:
     GLuint m_vbo;
     GLuint m_veb;
     GLuint m_vertex_count;
-    const DefaultShader* m_shader;
+    const GBufferShader* m_shader;
     Material m_material;
     static Vector3 normalAverage(std::vector<Vector3> input)
     {
@@ -17,7 +17,7 @@ private:
       return acc / input.size();
     }
 public:
-    HeightFieldMesh(float* data, int width, int height, int thickness, const DefaultShader* shader)
+    HeightFieldMesh(float* data, int width, int height, int thickness, const GBufferShader* shader)
     {
       m_shader = shader;
       m_material.diffuseColor = Vector3(1);

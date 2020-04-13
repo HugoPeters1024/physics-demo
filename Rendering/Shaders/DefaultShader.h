@@ -1,4 +1,4 @@
-static const char* vs_src = R"(
+static const char* default_vs_src = R"(
       #version 450
 
       layout(location = 0) in vec3 vPos;
@@ -19,7 +19,7 @@ static const char* vs_src = R"(
       }
     )";
 
-static const char* fs_src = R"(
+static const char* default_fs_src = R"(
       #version 450
 
       layout(location = 2) uniform vec3 uCamPos;
@@ -56,8 +56,8 @@ private:
     GLuint m_program;
 public:
     DefaultShader() {
-      GLuint vs = CompileShader(GL_VERTEX_SHADER, vs_src);
-      GLuint fs = CompileShader(GL_FRAGMENT_SHADER, fs_src);
+      GLuint vs = CompileShader(GL_VERTEX_SHADER, default_vs_src);
+      GLuint fs = CompileShader(GL_FRAGMENT_SHADER, default_fs_src);
       m_program = GenerateProgram(vs, fs);
     }
     void use(const Camera::Camera* camera, const Matrix4& mvp, const Material& material) const {

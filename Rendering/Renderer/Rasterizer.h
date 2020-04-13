@@ -3,6 +3,7 @@ class Rasterizer : public GLFWRenderer
 private:
     Logger m_logger = Logger("Rasterizer");
     std::shared_ptr<ResourceRepo> resourceRepo;
+    std::shared_ptr<GBuffer> gbuffer;
     std::vector<ISceneObject*> m_scene;
 public:
     Rasterizer();
@@ -39,20 +40,27 @@ Rasterizer::Rasterizer() {
 
   glfwSwapInterval(1);
 
+  gbuffer = std::make_shared<GBuffer>();
   resourceRepo = std::make_shared<ResourceRepo>();
 
   m_logger.logDebug("Initialized");
 }
 
 void Rasterizer::loop(const Camera::Camera* camera) {
-  glfwGetFramebufferSize(m_window, &m_window_width, &m_window_height);
-  glViewport(0, 0, m_window_width, m_window_height);
 
+  gbuffer->use();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   for (auto &obj : m_scene) {
     obj->draw(camera);
   }
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glfwGetFramebufferSize(m_window, &m_window_width, &m_window_height);
+  glViewport(0, 0, m_window_width, m_window_height);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  resourceRepo->getQuadMesh()->draw(gbuffer->getPositionTexture());
   glfwSwapBuffers(m_window);
   glfwPollEvents();
 }

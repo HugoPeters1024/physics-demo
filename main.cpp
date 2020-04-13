@@ -39,7 +39,6 @@ int main() {
   {
     if (tick++%60 == 0)
     {
-      /*
       rp3d::Transform cubeTransform(rp3d::Vector3(10*sin(glfwGetTime()),5,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
       rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
       rp3d::Material &cubeMaterial = cubeBody->getMaterial();
@@ -47,8 +46,8 @@ int main() {
       cubeMaterial.setFrictionCoefficient(1);
       rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
       renderer->addCube(cubeProxy, &boxShape);
-       */
 
+      /*
       rp3d::Transform sphereTransform(rp3d::Vector3(10*sin(glfwGetTime()),5,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
       rp3d::RigidBody* sphereBody = world.createRigidBody(sphereTransform);
       rp3d::Material &sphereMaterial = sphereBody->getMaterial();
@@ -56,6 +55,7 @@ int main() {
       sphereMaterial.setFrictionCoefficient(1);
       rp3d::ProxyShape* sphereProxy = sphereBody->addCollisionShape(&sphereShape, cubeTransform, 100);
       renderer->addSphere(sphereProxy, &sphereShape);
+       */
     }
     world.update(1.0/60.0);
     keyboard.swapBuffers();

@@ -21,6 +21,7 @@
 #include "keyboard.h"
 #include "camera.h"
 #include "CameraRayCaster.h"
+#include "Rendering/FrameBuffers/_deps.h"
 #include "Rendering/Shaders/_deps.h"
 #include "Rendering/Meshes/_deps.h"
 #include "Rendering/ResourceRepo.h"

@@ -1,5 +1,5 @@
 class CubeMesh : public GenericMesh
 {
 public:
-    CubeMesh(const DefaultShader* shader) : GenericMesh("Models/cube.obj", shader) {}
+    CubeMesh(const GBufferShader* shader) : GenericMesh("Models/cube.obj", shader) {}
 };
