@@ -2,3 +2,4 @@
 #include "DefaultShader.h"
 #include "QuadShader.h"
 #include "GBufferShader.h"
+#include "LightingShader.h"

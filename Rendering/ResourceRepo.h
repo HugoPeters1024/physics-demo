@@ -5,9 +5,11 @@ class ResourceRepo
         std::shared_ptr<CubeMesh> m_cube;
         std::shared_ptr<SphereMesh> m_sphere;
         std::shared_ptr<QuadMesh> m_quad;
+        std::shared_ptr<LightingQuadMesh> m_lighting_quad;
         std::shared_ptr<DefaultShader> m_default_shader;
         std::shared_ptr<QuadShader> m_quad_shader;
         std::shared_ptr<GBufferShader> m_gbuffer_shader;
+        std::shared_ptr<LightingShader> m_lighting_shader;
 public:
         ResourceRepo(){
           m_logger.logDebug("Compiling default shader");
@@ -19,6 +21,9 @@ public:
           m_logger.logDebug("Compiling gbuffer shader");
           m_gbuffer_shader = std::make_shared<GBufferShader>();
 
+          m_logger.logDebug("Compiling lighting shader");
+          m_lighting_shader = std::make_shared<LightingShader>();
+
           m_logger.logDebug("Building cube mesh");
           m_cube = std::make_shared<CubeMesh>(getGBufferShader());
 
@@ -27,12 +32,17 @@ public:
 
           m_logger.logDebug("Building quad mesh");
           m_quad = std::make_shared<QuadMesh>(getQuadShader());
+
+          m_logger.logDebug("Building lighting quad mesh");
+          m_lighting_quad = std::make_shared<LightingQuadMesh>(getLightingShader());
         };
         inline const CubeMesh* getCubeMesh() const { return m_cube.get(); }
         inline const SphereMesh* getSphereMesh() const { return m_sphere.get(); }
         inline const QuadMesh* getQuadMesh() const { return m_quad.get(); }
+        inline const LightingQuadMesh* getLightingQuadMesh() const { return m_lighting_quad.get(); }
         inline const DefaultShader* getDefaultShader() const { return m_default_shader.get(); }
         inline const QuadShader* getQuadShader() const { return m_quad_shader.get(); }
         inline const GBufferShader* getGBufferShader() const { return m_gbuffer_shader.get(); }
+        inline const LightingShader* getLightingShader() const { return m_lighting_shader.get(); }
 
 };

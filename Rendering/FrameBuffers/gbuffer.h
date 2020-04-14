@@ -11,19 +11,19 @@ public:
 
       glGenRenderbuffers(1, &m_depth_object);
       glBindRenderbuffer(GL_RENDERBUFFER, m_depth_object);
-      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 800, 600);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1920, 780);
       glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_depth_object);
 
       glGenTextures(1, &m_tex_normal);
       glBindTexture(GL_TEXTURE_2D, m_tex_normal);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 800, 600, 0, GL_RGBA, GL_FLOAT, nullptr);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 780, 0, GL_RGBA, GL_FLOAT, nullptr);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_tex_normal, 0);
 
       glGenTextures(1, &m_tex_pos);
       glBindTexture(GL_TEXTURE_2D, m_tex_pos);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 800, 600, 0, GL_RGBA, GL_FLOAT, nullptr);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1920, 780, 0, GL_RGBA, GL_FLOAT, nullptr);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
       glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, m_tex_pos, 0);
@@ -42,9 +42,9 @@ public:
     void use()
     {
       glBindFramebuffer(GL_FRAMEBUFFER, m_id);
-      glViewport(0, 0, 800, 600);
+      glViewport(0, 0, 1920, 780);
     }
 
-    GLuint getNormalTexture() { return m_tex_normal; }
-    GLuint getPositionTexture() { return m_tex_pos; }
+    GLuint getNormalTexture() const { return m_tex_normal; }
+    GLuint getPositionTexture() const { return m_tex_pos; }
 };

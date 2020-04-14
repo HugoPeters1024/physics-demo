@@ -60,7 +60,8 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   glViewport(0, 0, m_window_width, m_window_height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  resourceRepo->getQuadMesh()->draw(gbuffer->getPositionTexture());
+  //resourceRepo->getQuadMesh()->draw(gbuffer->getPositionTexture());
+  resourceRepo->getLightingQuadMesh()->draw(camera, gbuffer.get());
   glfwSwapBuffers(m_window);
   glfwPollEvents();
 }
