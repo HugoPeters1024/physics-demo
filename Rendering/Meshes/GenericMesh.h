@@ -6,13 +6,10 @@ private:
     GLuint m_veb;
     GLuint m_index_count;
     const GBufferShader* m_shader;
-    Material m_material;
 
 public:
     GenericMesh(const char* modelFile, const GBufferShader* shader) {
       m_shader = shader;
-      m_material.diffuseColor = Vector3(0.6, 0.7, 0.6);
-      m_material.specular = 1;
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
@@ -43,9 +40,9 @@ public:
       glBindVertexArray(0);
     }
 
-    void draw(const Camera::Camera* camera, const Matrix4& mvp) const {
+    void draw(const Camera::Camera* camera, const Matrix4& mvp, GLuint texture) const {
       glBindVertexArray(m_vao);
-      m_shader->use(camera, mvp, m_material);
+      m_shader->use(camera, mvp, texture);
       glDrawElements(GL_TRIANGLES, m_index_count, GL_UNSIGNED_INT, (void*)nullptr);
       glBindVertexArray(0);
     }

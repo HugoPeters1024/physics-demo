@@ -10,6 +10,8 @@ class ResourceRepo
         std::shared_ptr<QuadShader> m_quad_shader;
         std::shared_ptr<GBufferShader> m_gbuffer_shader;
         std::shared_ptr<LightingShader> m_lighting_shader;
+        GLuint m_tex_white;
+        GLuint m_tex_blue;
 public:
         ResourceRepo(){
           m_logger.logDebug("Compiling default shader");
@@ -35,6 +37,10 @@ public:
 
           m_logger.logDebug("Building lighting quad mesh");
           m_lighting_quad = std::make_shared<LightingQuadMesh>(getLightingShader());
+
+          m_logger.logDebug("Generating textures");
+          m_tex_white = createTextureColor(1, 1, 1);
+          m_tex_blue = createTextureColor(0.2f, 0.2f, 1.0f);
         };
         inline const CubeMesh* getCubeMesh() const { return m_cube.get(); }
         inline const SphereMesh* getSphereMesh() const { return m_sphere.get(); }
@@ -44,5 +50,7 @@ public:
         inline const QuadShader* getQuadShader() const { return m_quad_shader.get(); }
         inline const GBufferShader* getGBufferShader() const { return m_gbuffer_shader.get(); }
         inline const LightingShader* getLightingShader() const { return m_lighting_shader.get(); }
+        inline const GLuint getWhiteTexture() const { return m_tex_white; }
+        inline const GLuint getBlueTexture() const { return m_tex_blue; }
 
 };

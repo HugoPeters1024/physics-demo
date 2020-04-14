@@ -37,6 +37,7 @@ Rasterizer::Rasterizer() {
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LEQUAL);
   glEnable(GL_CULL_FACE);
+  glDisable(GL_FRAMEBUFFER_SRGB);
 
   glfwSwapInterval(1);
 
@@ -60,7 +61,7 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   glViewport(0, 0, m_window_width, m_window_height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-//  resourceRepo->getQuadMesh()->draw(gbuffer->getNormalTexture());
+  //resourceRepo->getQuadMesh()->draw(gbuffer->getAlbedoTexture());
   resourceRepo->getLightingQuadMesh()->draw(camera, gbuffer.get());
   glfwPollEvents();
   glfwSwapBuffers(m_window);

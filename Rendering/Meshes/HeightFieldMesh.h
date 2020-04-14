@@ -113,9 +113,9 @@ public:
       glBindVertexArray(0);
 
     }
-    void draw(const Camera::Camera* camera, const Matrix4& mvp) const {
+    void draw(const Camera::Camera* camera, const Matrix4& mvp, GLuint texture) const {
       glBindVertexArray(m_vao);
-      m_shader->use(camera, mvp, m_material);
+      m_shader->use(camera, mvp, texture);
       glDrawElements(GL_TRIANGLES, m_vertex_count, GL_UNSIGNED_INT, (void*)nullptr);
       glBindVertexArray(0);
     }
