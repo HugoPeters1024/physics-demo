@@ -57,14 +57,6 @@ public:
       mat4x4 e_mvp;
       mvp.unpack(e_mvp);
       glUniformMatrix4fv(SH_UN_MVP, 1, GL_FALSE, (const GLfloat*)e_mvp);
-
-      Vector3 camPos = camera->getPosition();
-      glUniform3f(SH_UN_CAMERA_POS, camPos.x, camPos.y, camPos.z);
-
-      glUniform1f(SH_UN_TIME, glfwGetTime());
-
-      glUniform3f(SH_UN_MATERIAL_COLOR, material.diffuseColor.x, material.diffuseColor.y, material.diffuseColor.z);
-      glUniform1f(SH_UN_MATERIAL_SPECULAR, material.specular);
     }
 
     static int SH_IN_VPOS;
@@ -72,10 +64,6 @@ public:
 
     static int SH_UN_CAMERA;
     static int SH_UN_MVP;
-    static int SH_UN_CAMERA_POS;
-    static int SH_UN_TIME;
-    static int SH_UN_MATERIAL_COLOR;
-    static int SH_UN_MATERIAL_SPECULAR;
 };
 
 int GBufferShader::SH_IN_VPOS = 0;
@@ -83,7 +71,3 @@ int GBufferShader::SH_IN_VNORMAL = 1;
 
 int GBufferShader::SH_UN_CAMERA = 0;
 int GBufferShader::SH_UN_MVP = 1;
-int GBufferShader::SH_UN_CAMERA_POS = 2;
-int GBufferShader::SH_UN_TIME = 3;
-int GBufferShader::SH_UN_MATERIAL_COLOR = 4;
-int GBufferShader::SH_UN_MATERIAL_SPECULAR = 5;
