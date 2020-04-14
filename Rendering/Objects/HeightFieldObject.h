@@ -11,7 +11,7 @@ public:
         rp3d::Vector3 min, max;
         map->getLocalBounds(min, max);
         m_mesh = std::make_unique<HeightFieldMesh>(data, map->getNbRows(), map->getNbColumns(), max.y - min.y, repo->getGBufferShader());
-        m_texture = repo->getWhiteTexture();
+        m_texture = repo->getGrassTexture();
       }
 
     void draw(const Camera::Camera* camera) const override {

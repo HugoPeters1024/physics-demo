@@ -74,6 +74,10 @@ public:
           vbo_data.push_back(n.x);
           vbo_data.push_back(n.y);
           vbo_data.push_back(n.z);
+
+          // Use x and z vertices again for uv coords.
+          vbo_data.push_back(v.x / 10.0f);
+          vbo_data.push_back(v.z / 10.0f);
         }
       }
 
@@ -105,10 +109,12 @@ public:
       glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
       glBufferData(GL_ARRAY_BUFFER, vbo_data.size() * sizeof(float), vbo_data.data(), GL_STATIC_DRAW);
 
-      glEnableVertexAttribArray(DefaultShader::SH_IN_VPOS);
-      glEnableVertexAttribArray(DefaultShader::SH_IN_VNORMAL);
-      glVertexAttribPointer(DefaultShader::SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 0));
-      glVertexAttribPointer(DefaultShader::SH_IN_VNORMAL, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 3));
+      glEnableVertexAttribArray(m_shader->SH_IN_VPOS);
+      glEnableVertexAttribArray(m_shader->SH_IN_VNORMAL);
+      glEnableVertexAttribArray(m_shader->SH_IN_VUV);
+      glVertexAttribPointer(m_shader->SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(sizeof(float) * 0));
+      glVertexAttribPointer(m_shader->SH_IN_VNORMAL, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(sizeof(float) * 3));
+      glVertexAttribPointer(m_shader->SH_IN_VUV, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(sizeof(float) * 6));
       glVertexArrayElementBuffer(m_vao, m_veb);
       glBindVertexArray(0);
 
