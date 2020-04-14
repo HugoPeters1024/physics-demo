@@ -21,7 +21,7 @@ public:
       std::vector<float> vertices;
       std::vector<GLuint> indices;
 
-      obj.renderVertexBufferWithNormalsInts(vertices, indices);
+      obj.renderVertexBufferWithNormalsAndUvInts(vertices, indices);
       m_index_count = indices.size();
 
       glGenBuffers(1, &m_vbo);
@@ -34,8 +34,10 @@ public:
 
       glEnableVertexAttribArray(m_shader->SH_IN_VPOS);
       glEnableVertexAttribArray(m_shader->SH_IN_VNORMAL);
-      glVertexAttribPointer(m_shader->SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 0));
-      glVertexAttribPointer(m_shader->SH_IN_VNORMAL, 3, GL_FLOAT, GL_FALSE, 6*sizeof(float), (void*)(sizeof(float) * 3));
+      glEnableVertexAttribArray(m_shader->SH_IN_VUV);
+      glVertexAttribPointer(m_shader->SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(sizeof(float) * 0));
+      glVertexAttribPointer(m_shader->SH_IN_VNORMAL, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(sizeof(float) * 3));
+      glVertexAttribPointer(m_shader->SH_IN_VUV, 3, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(sizeof(float) * 6));
       glVertexArrayElementBuffer(m_vao, m_veb);
       glBindVertexArray(0);
     }

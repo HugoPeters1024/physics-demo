@@ -62,8 +62,7 @@ class cObj {
   public:
     cObj(std::string filename);
     ~cObj() {};
-    void renderVertexBufferWithNormalsBytes(std::vector<float> &vbo, std::vector<GLubyte> &indices);
-    void renderVertexBufferWithNormalsInts(std::vector<float> &vbo, std::vector<uint> &indices);
+    void renderVertexBufferWithNormalsAndUvInts(std::vector<float> &vbo, std::vector<uint> &indices);
 };
 
 cObj::cObj(std::string filename) {
@@ -140,21 +139,23 @@ cObj::cObj(std::string filename) {
     std::cout << "              Faces: " << faces.size() << std::endl << std::endl;
 }
 
-struct float6 {
-    float x,y,z,nx,ny,nz;
+struct float8 {
+    float x,y,z,nx,ny,nz,uvx,uvy;
 };
 
-inline bool operator ==(const float6& lhs, const float6& rhs) {
+inline bool operator ==(const float8& lhs, const float8& rhs) {
   return lhs.x == rhs.x &&
          lhs.y == rhs.y &&
          lhs.z == rhs.z &&
          lhs.nx == rhs.nx &&
          lhs.ny == rhs.ny &&
-         lhs.nz == rhs.nz;
+         lhs.nz == rhs.nz &&
+         lhs.uvx == rhs.uvx &&
+         lhs.uvy == rhs.uvy;
 };
 
 struct hashfn {
-    std::size_t operator() (const float6 &vertex) const
+    std::size_t operator() (const float8 &vertex) const
     {
       std::size_t hx = std::hash<float>()(vertex.x);
       std::size_t hy = std::hash<float>()(vertex.y);
@@ -162,14 +163,16 @@ struct hashfn {
       std::size_t hnx = std::hash<float>()(vertex.nx);
       std::size_t hny = std::hash<float>()(vertex.ny);
       std::size_t hnz = std::hash<float>()(vertex.nz);
-      return hx ^ hy ^ hz ^ hnx ^ hny ^ hnz;
+      std::size_t huvx = std::hash<float>()(vertex.nz);
+      std::size_t huvy = std::hash<float>()(vertex.nz);
+      return hx ^ hy ^ hz ^ hnx ^ hny ^ hnz ^ huvx ^ huvy;
     }
 };
 
-void cObj::renderVertexBufferWithNormalsInts(std::vector<float> &vbo, std::vector<uint> &indices) {
+void cObj::renderVertexBufferWithNormalsAndUvInts(std::vector<float> &vbo, std::vector<uint> &indices) {
   vbo.clear();
   indices.clear();
-  std::unordered_map<float6, GLuint, hashfn> visited;
+  std::unordered_map<float8, GLuint, hashfn> visited;
   GLuint q=0;
   for(int i=0; i<faces.size(); i++)
   {
@@ -177,15 +180,18 @@ void cObj::renderVertexBufferWithNormalsInts(std::vector<float> &vbo, std::vecto
     {
       auto vIndex = faces[i].vertex[j];
       auto nIndex = faces[i].normal[j];
-      float6 data = {
+      auto tIndex = faces[i].texture[j];
+      float8 data = {
               vertices[vIndex].v[0],
               vertices[vIndex].v[1],
               vertices[vIndex].v[2],
               normals[nIndex].v[0],
               normals[nIndex].v[1],
               normals[nIndex].v[2],
+              texcoords[tIndex].v[0],
+              texcoords[tIndex].v[1],
       };
-      auto tryInsert = visited.insert(std::pair<float6, GLuint>(data, q));
+      auto tryInsert = visited.insert(std::pair<float8, GLuint>(data, q));
       if (tryInsert.second)
       {
         // New vertex, add it, refer to it.
@@ -195,6 +201,8 @@ void cObj::renderVertexBufferWithNormalsInts(std::vector<float> &vbo, std::vecto
         vbo.push_back(tryInsert.first->first.nx);
         vbo.push_back(tryInsert.first->first.ny);
         vbo.push_back(tryInsert.first->first.nz);
+        vbo.push_back(tryInsert.first->first.uvx);
+        vbo.push_back(tryInsert.first->first.uvy);
         indices.push_back(q);
         q++;
         if (q==0) {
@@ -209,7 +217,7 @@ void cObj::renderVertexBufferWithNormalsInts(std::vector<float> &vbo, std::vecto
     }
   }
 
-  g_logDebug("Converted vbo contains %u entries and has %u indices referring", vbo.size()/6, indices.size());
+  g_logDebug("Converted vbo contains %u entries and has %u indices referring", vbo.size()/8, indices.size());
 }
 
 
