@@ -53,7 +53,7 @@ int main() {
   int tick=1;
   while(!renderer->shouldClose())
   {
-    if (tick++%3 == 0)
+    if (tick++%30 == 0)
     {
       /*
       rp3d::Transform cubeTransform(rp3d::Vector3(10*sin(glfwGetTime()),5,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));

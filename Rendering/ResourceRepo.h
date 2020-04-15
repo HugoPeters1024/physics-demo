@@ -14,6 +14,7 @@ class ResourceRepo
         GLuint m_tex_white;
         GLuint m_tex_blue;
         GLuint m_tex_grass;
+        GLuint m_tex_mars;
 public:
         ResourceRepo(){
           m_logger.logDebug("Compiling default shader");
@@ -47,6 +48,7 @@ public:
           m_tex_white = createTextureColor(1, 1, 1);
           m_tex_blue = createTextureColor(0.2f, 0.2f, 1.0f);
           m_tex_grass = loadTexture("Textures/grass.jpg");
+          m_tex_mars = loadTexture("Textures/mars.jpg");
         };
         inline const CubeMesh* getCubeMesh() const { return m_cube.get(); }
         inline const SphereMesh* getSphereMesh() const { return m_sphere.get(); }
@@ -60,5 +62,6 @@ public:
         inline const GLuint getWhiteTexture() const { return m_tex_white; }
         inline const GLuint getBlueTexture() const { return m_tex_blue; }
         inline const GLuint getGrassTexture() const { return m_tex_grass; }
+        inline const GLuint getMarsTexture() const { return m_tex_mars; }
 
 };

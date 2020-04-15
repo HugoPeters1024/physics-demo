@@ -10,7 +10,7 @@ public:
       m_mesh = repo->getSphereMesh();
       m_shape = shape;
       m_sphere = sphere;
-      m_texture = repo->getWhiteTexture();
+      m_texture = repo->getMarsTexture();
     }
 
     void draw(const Camera::Camera* camera) const override {
