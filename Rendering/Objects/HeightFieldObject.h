@@ -15,6 +15,6 @@ public:
       }
 
     void draw(const Camera::Camera* camera) const override {
-        m_mesh->draw(camera, getMvp(m_shape) * Matrix4::FromScale(Vector3(m_map->getScaling())), m_texture);
+        m_mesh->draw(camera, getMvp(m_shape), m_texture);
     }
 };

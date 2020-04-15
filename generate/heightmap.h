@@ -1,4 +1,4 @@
-inline float* generateHeightMap(int width, int height, int thickness)
+inline float* generateHeightMap(int width, int height, int thickness, float scaler = 10)
 {
   float* data = (float*)malloc(width*height*sizeof(float));
   PerlinNoise generator;
@@ -6,7 +6,7 @@ inline float* generateHeightMap(int width, int height, int thickness)
   {
     for(int x=0; x<width; x++)
     {
-      data[x + width * y] = (float)generator.noise((double)x/10, (double)y/10, 0) * thickness;
+      data[x + width * y] = (float)generator.noise((double)x/scaler, (double)y/scaler, 0) * thickness;
     }
   }
   return data;

@@ -7,14 +7,15 @@ private:
     GLuint m_vertex_count;
     const GBufferShader* m_shader;
     Material m_material;
-    static Vector3 normalAverage(std::vector<Vector3> input)
+    static Vector3 normalAverage(std::vector<Vector3>& input)
     {
       Vector3 acc(0);
       for(auto &v : input)
       {
         acc += v;
       }
-      return acc / input.size();
+      acc.normalize();
+      return acc;
     }
 public:
     HeightFieldMesh(float* data, int width, int height, int thickness, const GBufferShader* shader)
@@ -76,8 +77,8 @@ public:
           vbo_data.push_back(n.z);
 
           // Use x and z vertices again for uv coords.
-          vbo_data.push_back(v.x / 10.0f);
-          vbo_data.push_back(v.z / 10.0f);
+          vbo_data.push_back(v.x / 20.0f);
+          vbo_data.push_back(v.z / 20.0f);
         }
       }
 

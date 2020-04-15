@@ -33,9 +33,9 @@ static const char* lighting_fs_src = R"(
           //color = vec4(1,1,1,0.2f); return;
           vec2 uv = gl_FragCoord.xy / screenSize;
           vec3 fragPos = texture(posTex, uv).xyz;
-          vec3 fragNormal = texture(normalTex, uv).xyz;
+          vec3 fragNormal = normalize(texture(normalTex, uv).xyz);
           // Fragment is outside the world
-          if (dot(fragNormal, fragNormal) < 0.98) {
+          if (dot(fragNormal, fragNormal) < 0.99) {
               color = vec4(0);
               return;
           }

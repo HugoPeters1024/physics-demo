@@ -27,6 +27,16 @@
 					<DistClean command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/home/hugo/repos/physics"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
 			<Target title="physics">
 				<Option output="/home/hugo/repos/physics/physics" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/hugo/repos/physics"/>
@@ -56,16 +66,6 @@
 				</Compiler>
 				<MakeCommands>
 					<Build command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 physics/fast"/>
-					<CompileFile command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
-					<Clean command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 clean"/>
-					<DistClean command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 clean"/>
-				</MakeCommands>
-			</Target>
-			<Target title="edit_cache">
-				<Option working_dir="/home/hugo/repos/physics"/>
-				<Option type="4"/>
-				<MakeCommands>
-					<Build command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 edit_cache"/>
 					<CompileFile command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -f &quot;/home/hugo/repos/physics/Makefile&quot;  VERBOSE=1 clean"/>
