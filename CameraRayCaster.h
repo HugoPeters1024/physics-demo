@@ -9,9 +9,9 @@ public:
     }
 
     rp3d::decimal notifyRaycastHit(const rp3d::RaycastInfo& info) override {
-      if (m_camera->getPosition().y < info.worldPoint.y + 2)
+      if (m_camera->getPosition().y < info.worldPoint.y + 5)
       {
-        m_camera->pos.y = info.worldPoint.y + 2;
+        m_camera->pos.y = info.worldPoint.y + 5;
         m_camera->velocity = Vector3(0);
       }
 

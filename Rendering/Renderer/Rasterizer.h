@@ -5,6 +5,7 @@ private:
     std::shared_ptr<ResourceRepo> resourceRepo;
     std::shared_ptr<GBuffer> gbuffer;
     std::vector<ISceneObject*> m_scene;
+    std::vector<Light*> m_lights;
 public:
     Rasterizer();
     void loop(const Camera::Camera* camera) override;
@@ -12,6 +13,7 @@ public:
     inline void addCube(rp3d::ProxyShape* shape, rp3d::BoxShape* box) override { m_scene.push_back(new CubeObject(resourceRepo.get(), shape, box)); }
     inline void addSphere(rp3d::ProxyShape* shape, rp3d::SphereShape* sphere) override { m_scene.push_back(new SphereObject(resourceRepo.get(), shape, sphere)); }
     inline void addHeightMap(rp3d::ProxyShape* shape, rp3d::HeightFieldShape* map, float* data) override { m_scene.push_back(new HeightFieldObject(resourceRepo.get(), shape, map, data)); }
+    inline void addLight(Light* light) override { m_lights.push_back(light); }
 };
 
 Rasterizer::Rasterizer() {
@@ -28,7 +30,7 @@ Rasterizer::Rasterizer() {
 
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-  m_window = glfwCreateWindow(604, 480, "Physics", NULL, NULL);
+  m_window = glfwCreateWindow(1920, 1080, "Physics", glfwGetPrimaryMonitor(), NULL);
   if (!m_window){
     m_logger.logError("Could not create window.");
     exit(-3);
@@ -57,12 +59,23 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   }
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glfwGetFramebufferSize(m_window, &m_window_width, &m_window_height);
-  glViewport(0, 0, m_window_width, m_window_height);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  glfwGetFramebufferSize(m_window, &m_window_width, &m_window_height);
+  Vector2 screenSize = Vector2((float)m_window_width, (float)m_window_height);
+  glViewport(0, 0, m_window_width, m_window_height);
 
   //resourceRepo->getQuadMesh()->draw(gbuffer->getAlbedoTexture());
-  resourceRepo->getLightingQuadMesh()->draw(camera, gbuffer.get());
+  //resourceRepo->getLightingQuadMesh()->draw(screenSize, camera, gbuffer.get());
+  glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE);
+  glCullFace(GL_FRONT);
+  for(Light* light : m_lights) {
+    resourceRepo->getVolumeMesh()->draw(screenSize, light, camera, light->getMvp(), gbuffer.get());
+  }
+  glCullFace(GL_BACK);
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
   glfwPollEvents();
   glfwSwapBuffers(m_window);
-}
+};

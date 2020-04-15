@@ -6,6 +6,7 @@ class ResourceRepo
         std::shared_ptr<SphereMesh> m_sphere;
         std::shared_ptr<QuadMesh> m_quad;
         std::shared_ptr<LightingQuadMesh> m_lighting_quad;
+        std::shared_ptr<VolumeMesh> m_volume_mesh;
         std::shared_ptr<DefaultShader> m_default_shader;
         std::shared_ptr<QuadShader> m_quad_shader;
         std::shared_ptr<GBufferShader> m_gbuffer_shader;
@@ -39,6 +40,9 @@ public:
           m_logger.logDebug("Building lighting quad mesh");
           m_lighting_quad = std::make_shared<LightingQuadMesh>(getLightingShader());
 
+          m_logger.logDebug("Building volume quad mesh");
+          m_volume_mesh = std::make_shared<VolumeMesh>(getLightingShader());
+
           m_logger.logDebug("Generating textures");
           m_tex_white = createTextureColor(1, 1, 1);
           m_tex_blue = createTextureColor(0.2f, 0.2f, 1.0f);
@@ -48,6 +52,7 @@ public:
         inline const SphereMesh* getSphereMesh() const { return m_sphere.get(); }
         inline const QuadMesh* getQuadMesh() const { return m_quad.get(); }
         inline const LightingQuadMesh* getLightingQuadMesh() const { return m_lighting_quad.get(); }
+        inline const VolumeMesh* getVolumeMesh() const { return m_volume_mesh.get(); }
         inline const DefaultShader* getDefaultShader() const { return m_default_shader.get(); }
         inline const QuadShader* getQuadShader() const { return m_quad_shader.get(); }
         inline const GBufferShader* getGBufferShader() const { return m_gbuffer_shader.get(); }

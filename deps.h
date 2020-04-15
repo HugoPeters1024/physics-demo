@@ -6,6 +6,7 @@
 #include <map>
 #include <unordered_map>
 #include <set>
+#include <cmath>
 
 #define GL_GLEXT_PROTOTYPES 1
 #define GL3_PROTOTYPES      1
@@ -24,6 +25,7 @@
 #include "camera.h"
 #include "CameraRayCaster.h"
 #include "Rendering/Textures/_deps.h"
+#include "Rendering/Lights/_deps.h"
 #include "Rendering/Framebuffers/_deps.h"
 #include "Rendering/Shaders/_deps.h"
 #include "Rendering/Meshes/_deps.h"

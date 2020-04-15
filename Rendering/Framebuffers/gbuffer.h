@@ -3,8 +3,8 @@ class GBuffer
 private:
     GLuint m_id, m_tex_normal, m_tex_pos, m_tex_albedo, m_depth_object;
     Logger m_logger = Logger("GBuffer");
-    int width = 2048;
-    int height = 1024;
+    int width = 1920;
+    int height = 780;
 public:
     GBuffer() {
       m_logger.logDebug("Creating the GBuffer");

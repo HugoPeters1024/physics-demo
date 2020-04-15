@@ -13,5 +13,6 @@ public:
     virtual void addCube(rp3d::ProxyShape* shape, rp3d::BoxShape* box) = 0;
     virtual void addSphere(rp3d::ProxyShape* shape, rp3d::SphereShape* box) = 0;
     virtual void addHeightMap(rp3d::ProxyShape* shape, rp3d::HeightFieldShape* map, float* data) = 0;
+    virtual void addLight(Light* light) = 0;
 };
 

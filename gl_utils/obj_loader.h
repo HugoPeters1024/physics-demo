@@ -63,6 +63,7 @@ class cObj {
     cObj(std::string filename);
     ~cObj() {};
     void renderVertexBufferWithNormalsAndUvInts(std::vector<float> &vbo, std::vector<uint> &indices);
+    void renderVertexBufferPosOnly(std::vector<float> &vbo, std::vector<uint> &indices);
 };
 
 cObj::cObj(std::string filename) {
@@ -154,7 +155,7 @@ inline bool operator ==(const float8& lhs, const float8& rhs) {
          lhs.uvy == rhs.uvy;
 };
 
-struct hashfn {
+struct hashfn8 {
     std::size_t operator() (const float8 &vertex) const
     {
       std::size_t hx = std::hash<float>()(vertex.x);
@@ -172,7 +173,7 @@ struct hashfn {
 void cObj::renderVertexBufferWithNormalsAndUvInts(std::vector<float> &vbo, std::vector<uint> &indices) {
   vbo.clear();
   indices.clear();
-  std::unordered_map<float8, GLuint, hashfn> visited;
+  std::unordered_map<float8, GLuint, hashfn8> visited;
   GLuint q=0;
   for(int i=0; i<faces.size(); i++)
   {
@@ -221,4 +222,64 @@ void cObj::renderVertexBufferWithNormalsAndUvInts(std::vector<float> &vbo, std::
 }
 
 
+struct float3 {
+    float x,y,z;
+};
+
+inline bool operator ==(const float3& lhs, const float3 rhs) {
+  return lhs.x == rhs.x &&
+         lhs.y == rhs.y &&
+         lhs.z == rhs.z;
+};
+
+struct hashfn3 {
+    std::size_t operator() (const float3 &vertex) const
+    {
+      std::size_t hx = std::hash<float>()(vertex.x);
+      std::size_t hy = std::hash<float>()(vertex.y);
+      std::size_t hz = std::hash<float>()(vertex.z);
+      return hx ^ hy ^ hz;
+    }
+};
+
+void cObj::renderVertexBufferPosOnly(std::vector<float> &vbo, std::vector<uint> &indices) {
+  vbo.clear();
+  indices.clear();
+  std::unordered_map<float3, GLuint, hashfn3> visited;
+  GLuint q=0;
+  for(int i=0; i<faces.size(); i++)
+  {
+    for(int j=0; j<3; j++)
+    {
+      auto vIndex = faces[i].vertex[j];
+      auto nIndex = faces[i].normal[j];
+      auto tIndex = faces[i].texture[j];
+      float3 data = {
+              vertices[vIndex].v[0],
+              vertices[vIndex].v[1],
+              vertices[vIndex].v[2],
+      };
+      auto tryInsert = visited.insert(std::pair<float3, GLuint>(data, q));
+      if (tryInsert.second)
+      {
+        // New vertex, add it, refer to it.
+        vbo.push_back(tryInsert.first->first.x);
+        vbo.push_back(tryInsert.first->first.y);
+        vbo.push_back(tryInsert.first->first.z);
+        indices.push_back(q);
+        q++;
+        if (q==0) {
+          g_logError("Indices of model do not fit in an uint, what?");
+          exit(-6);
+        }
+      }
+      else{
+        // Existing vertex, only refer to it.
+        indices.push_back(tryInsert.first->second);
+      }
+    }
+  }
+
+  g_logDebug("Converted vbo contains %u entries and has %u indices referring", vbo.size()/8, indices.size());
+}
 #endif

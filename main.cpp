@@ -3,7 +3,7 @@
 int main() {
 
   std::unique_ptr<IRenderer> renderer = std::make_unique<Rasterizer>();
-  Camera::Camera camera(0.8f);
+  Camera::Camera camera(1.6f);
   Keyboards::Keyboard keyboard(renderer->getWindowPointer());
 
   rp3d::Vector3 gravity(0, -9.81f, 0);
@@ -29,16 +29,33 @@ int main() {
   floorMaterial.setFrictionCoefficient(1.0);
   const rp3d::Vector3 floorHalfExtends(10, 0.2, 10);
   rp3d::BoxShape floorShape(floorHalfExtends);
-  float* heightFieldData = generateHeightMap(200, 200, 4);
-  rp3d::HeightFieldShape heightField(200, 200, 0, 4, heightFieldData, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE, 1);
+  float* heightFieldData = generateHeightMap(100, 100, 4);
+  rp3d::HeightFieldShape heightField(100, 100, 0, 4, heightFieldData, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE, 1);
   rp3d::ProxyShape* floorProxy = floorBody->addCollisionShape(&heightField, rp3d::Transform::identity(), 0);
   renderer->addHeightMap(floorProxy, &heightField, heightFieldData);
+
+
+  Light* sun = new Light();
+  sun->position = Vector3(0,25,0);
+  sun->color = Vector3(1)*1000;
+  renderer->addLight(sun);
+
+  for(int i=0; i<40; i++) {
+    float p = (float)i / 40;
+    float x = 40 * cos(p * 6.28);
+    float z = 40 * sin(p * 6.28);
+    Light* light = new Light();
+    light->position = Vector3(x, 3, z),
+    light->color = Vector3(p, 1-p, 0.5 + 0.5*sin(p*15)) * 50;
+    renderer->addLight(light);
+  }
 
   int tick=1;
   while(!renderer->shouldClose())
   {
-    if (tick++%60 == 0)
+    if (tick++%3 == 0)
     {
+      /*
       rp3d::Transform cubeTransform(rp3d::Vector3(10*sin(glfwGetTime()),5,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
       rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
       rp3d::Material &cubeMaterial = cubeBody->getMaterial();
@@ -46,8 +63,8 @@ int main() {
       cubeMaterial.setFrictionCoefficient(1);
       rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
       renderer->addCube(cubeProxy, &boxShape);
+       */
 
-      /*
       rp3d::Transform sphereTransform(rp3d::Vector3(10*sin(glfwGetTime()),5,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
       rp3d::RigidBody* sphereBody = world.createRigidBody(sphereTransform);
       rp3d::Material &sphereMaterial = sphereBody->getMaterial();
@@ -55,7 +72,6 @@ int main() {
       sphereMaterial.setFrictionCoefficient(1);
       rp3d::ProxyShape* sphereProxy = sphereBody->addCollisionShape(&sphereShape, cubeTransform, 100);
       renderer->addSphere(sphereProxy, &sphereShape);
-       */
     }
     world.update(1.0/60.0);
     keyboard.swapBuffers();
