@@ -1,13 +1,13 @@
-class GenericMesh {
+class SkyboxMesh {
 private:
     GLuint m_vao;
     GLuint m_vbo;
     GLuint m_veb;
     GLuint m_index_count;
-    const GBufferShader* m_shader;
+    const ShaderSkyBox* m_shader;
 
 public:
-    GenericMesh(const char* modelFile, const GBufferShader* shader) {
+    SkyboxMesh(const char* modelFile, const ShaderSkyBox* shader) {
       m_shader = shader;
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
@@ -21,6 +21,14 @@ public:
       std::vector<GLuint> indices;
 
       obj.renderVertexBufferWithNormalsAndUvInts(vertices, indices);
+
+      // Invert winding
+      for(int i=0; i<indices.size(); i+=3)
+      {
+        auto temp = indices[i];
+        indices[i] = indices[i+2];
+        indices[i+2] = temp;
+      }
       m_index_count = indices.size();
 
       glGenBuffers(1, &m_vbo);

@@ -58,12 +58,18 @@ void Rasterizer::loop(const Camera::Camera* camera) {
     obj->draw(camera);
   }
 
+  glBindFramebuffer(GL_READ_FRAMEBUFFER, gbuffer->getFramebufferID());
+  glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+  glBlitFramebuffer(0, 0, m_window_width, m_window_height, 0, 0, m_window_width, m_window_height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glfwGetFramebufferSize(m_window, &m_window_width, &m_window_height);
   Vector2 screenSize = Vector2((float)m_window_width, (float)m_window_height);
   glViewport(0, 0, m_window_width, m_window_height);
 
+
+  resourceRepo->getSkyboxMesh()->draw(camera, Matrix4::FromTranslation(camera->getPosition()) * Matrix4::FromScale(1000), resourceRepo->getSkyBoxTexture());
   //resourceRepo->getQuadMesh()->draw(gbuffer->getAlbedoTexture());
   //resourceRepo->getLightingQuadMesh()->draw(screenSize, camera, gbuffer.get());
   glDisable(GL_DEPTH_TEST);
@@ -76,6 +82,8 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   glCullFace(GL_BACK);
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
+
+
   glfwPollEvents();
   glfwSwapBuffers(m_window);
 };

@@ -1,7 +1,6 @@
 #include "deps.h"
 
 int main() {
-
   std::unique_ptr<IRenderer> renderer = std::make_unique<Rasterizer>();
   Camera::Camera camera(1.6f);
   Keyboards::Keyboard keyboard(renderer->getWindowPointer());
@@ -36,8 +35,8 @@ int main() {
 
 
   auto sun = new Light();
-  sun->position = Vector3(0,25,0);
-  sun->color = Vector3(1)*1000;
+  sun->position = Vector3(0,80,0);
+  sun->color = Vector3(1)*20000;
   renderer->addLight(sun);
 
   std::vector<Light*> lights;

@@ -156,6 +156,7 @@ public:
     mat4x4_scale_aniso(r, r, x, y, z);
     return Matrix4(r);
   }
+  static Matrix4 FromScale(float s) { return FromScale(s,s,s); }
   static Matrix4 FromScale(Vector3 v) { return FromScale(v.x, v.y, v.z); }
   static Matrix4 FromAxisRotations(float xr, float yr, float zr) {
     mat4x4 rx, ry, rz, i;

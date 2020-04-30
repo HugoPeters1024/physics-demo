@@ -57,4 +57,5 @@ public:
     GLuint getNormalTexture() const { return m_tex_normal; }
     GLuint getPositionTexture() const { return m_tex_pos; }
     GLuint getAlbedoTexture() const { return m_tex_albedo; }
+    GLuint getFramebufferID() const { return m_id; }
 };
