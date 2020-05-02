@@ -26,6 +26,7 @@ Rasterizer::Rasterizer() {
 
   glfwSetErrorCallback(error_callback);
   glEnable(GL_DEBUG_OUTPUT);
+  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageCallback(GLDEBUGPROC(gl_debug_output), nullptr);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
@@ -52,6 +53,7 @@ Rasterizer::Rasterizer() {
 }
 
 void Rasterizer::loop(const Camera::Camera* camera) {
+  float lightness = sin(glfwGetTime() / 10) * 0.5 + 0.5;
 
   gbuffer->use();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -64,7 +66,6 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, postbuffer->getFramebufferId());
   glBlitFramebuffer(0, 0, m_window_width, m_window_height, 0, 0, m_window_width, m_window_height, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
-  //glBindFramebuffer(GL_FRAMEBUFFER, 0);
   postbuffer->use();
   glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   glfwGetFramebufferSize(m_window, &m_window_width, &m_window_height);
@@ -72,20 +73,28 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   glViewport(0, 0, m_window_width, m_window_height);
 
 
-  //resourceRepo->getQuadMesh()->draw(gbuffer->getAlbedoTexture());
-  //resourceRepo->getLightingQuadMesh()->draw(screenSize, camera, gbuffer.get());
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE);
   glCullFace(GL_FRONT);
   for(Light* light : m_lights) {
-    resourceRepo->getVolumeMesh()->draw(screenSize, light, camera, light->getMvp(), gbuffer.get(), resourceRepo->getSkyBoxTexture());
+    resourceRepo->getVolumeMesh()->draw(
+            screenSize,
+            light,
+            camera,
+            gbuffer.get(),
+            resourceRepo->getSkyBoxTexture(),
+            lightness);
   }
   glCullFace(GL_BACK);
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  resourceRepo->getSkyboxMesh()->draw(camera, Matrix4::FromTranslation(camera->getPosition()) * Matrix4::FromScale(1000), resourceRepo->getSkyBoxTexture());
+  resourceRepo->getSkyboxMesh()->draw(
+          camera,
+          Matrix4::FromTranslation(camera->getPosition()) * Matrix4::FromScale(1000),
+          resourceRepo->getSkyBoxTexture(),
+          lightness);
 
   // Now draw to the screen using the post quad
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

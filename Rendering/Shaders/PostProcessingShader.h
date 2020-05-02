@@ -28,10 +28,15 @@ void main()
   // widescreen
   if (uv.y < 0.1 || uv.y > 0.9) return;
 
-  vec2 abberation = (uv - vec2(0.5)) * 0.005;
+  vec2 fromcenter = (uv - vec2(0.5));
+  vec2 abberation = fromcenter * 0.002;
+
+  float disfromcenter = dot(fromcenter*2, fromcenter*2);
+
   color.r = texture(tex, uv + abberation * 0).r;
   color.g = texture(tex, uv + abberation * 1).g;
   color.b = texture(tex, uv + abberation * 2).b;
+  color *= (1-disfromcenter*0.6);
 }
 )";
 

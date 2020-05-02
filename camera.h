@@ -27,7 +27,7 @@ Camera::Camera(float fov)
 {
   viewDir = Vector3(0, 0, -1); 
   this->fov = fov;
-  gravity = 0.01f;
+  gravity = 0.05f;
 }
 
 void Camera::update(float ratio, Keyboard* keyboard)
@@ -36,8 +36,8 @@ void Camera::update(float ratio, Keyboard* keyboard)
   velocity += Vector3(0, -gravity, 0);
 
   if (keyboard->isPressed(JUMP))
-    velocity.y = 0.5f;
-  float speed = 0.1f;
+    velocity.y = 1.5f;
+  float speed = 0.2f;
   float rot_speed = 0.02f;
 
   Vector3 move_dir = Vector3(viewDir.x, 0, viewDir.z).normalize();

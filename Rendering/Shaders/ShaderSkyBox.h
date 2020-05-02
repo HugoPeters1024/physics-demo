@@ -30,12 +30,18 @@ in vec3 fragPos;
 in vec3 uv;
 
 layout(location = 2) uniform samplerCube tex;
+layout(location = 3) uniform float uLightness;
 layout(location = 0) out vec3 o_color;
 
+vec3 sampleSkybox(vec3 coords) {
+    return texture(tex, coords).xyz * 2 * uLightness;
+}
+
 void main() {
-  o_color = texture(tex, uv).xyz;
+  o_color = sampleSkybox(uv);
 }
 )";
+
 
 
 class ShaderSkyBox
@@ -50,7 +56,7 @@ public:
       m_program = GenerateProgram(vs, fs);
     }
 
-    void use(const Camera::Camera* camera, const Matrix4& mvp, GLuint texture) const {
+    void use(const Camera::Camera* camera, const Matrix4& mvp, GLuint texture, float lightness) const {
       glUseProgram(m_program);
 
       mat4x4 e_camera;
@@ -64,6 +70,8 @@ public:
       glUniform1i(SH_UN_TEX, 0);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+
+      glUniform1f(SH_UN_LIGHTNESS, lightness);
     }
 
     static int SH_IN_VPOS;
@@ -73,6 +81,7 @@ public:
     static int SH_UN_CAMERA;
     static int SH_UN_MVP;
     static int SH_UN_TEX;
+    static int SH_UN_LIGHTNESS;
 };
 
 int ShaderSkyBox::SH_IN_VPOS = 0;
@@ -82,3 +91,4 @@ int ShaderSkyBox::SH_IN_VUV = 2;
 int ShaderSkyBox::SH_UN_CAMERA = 0;
 int ShaderSkyBox::SH_UN_MVP = 1;
 int ShaderSkyBox::SH_UN_TEX = 2;
+int ShaderSkyBox::SH_UN_LIGHTNESS = 3;

@@ -12,7 +12,7 @@ public:
       m_box = box;
       m_texture = GMaterial(
               repo->getBlueTexture(),
-              repo->getBlackTexture());
+              createTextureColor(1, 0.5, 0));
     }
 
     void draw(const Camera::Camera* camera) const override {

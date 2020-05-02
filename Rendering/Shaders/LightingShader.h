@@ -27,9 +27,14 @@ static const char* lighting_fs_src = R"(
       layout(location = 10) uniform vec3 lightPos;
       layout(location = 11) uniform vec3 lightCol;
       layout(location = 12) uniform samplerCube skyboxTex;
+      layout(location = 13) uniform float lightness;
 
 
       out vec4 color;
+
+      vec3 sampleSkybox(vec3 coords) {
+          return texture(skyboxTex, coords).xyz * 2 * lightness;
+      }
 
       void main()
       {
@@ -62,16 +67,17 @@ static const char* lighting_fs_src = R"(
           vec3 refl = normalize(reflect(eye, fragNormal));
           float spec = pow(max(dot(refl, lightNormal), 0), 30) * lightingValues.x;
 
-          vec3 reflectedComponent = texture(skyboxTex, refl).xyz * lightingValues.y;
+          vec3 reflectedComponent = sampleSkybox(refl) * lightingValues.y;
 
           float ratio = 1.00 / 1.52;
           vec3 refractedRay = refract(eye, fragNormal, ratio);
-          vec3 refractedComponent = texture(skyboxTex, refractedRay).xyz * lightingValues.z;
+          vec3 refractedComponent = sampleSkybox(refractedRay) * lightingValues.z;
 
           float ambient = 0.0f;
+          float albedoDamp = max(1 - lightingValues.y - lightingValues.z, 0);
+
           color = vec4(
-             ambient * fragColor + (diffuse + spec) * fragColor * lightCol * falloff + reflectedComponent + refractedComponent, 1);
-         // color = texture(reflectiveTex, uv);
+             ambient * fragColor + (diffuse + spec) * albedoDamp * fragColor * lightCol * falloff + reflectedComponent + refractedComponent, 1);
       }
     )";
 
@@ -84,7 +90,7 @@ public:
       GLuint fs = CompileShader(GL_FRAGMENT_SHADER, lighting_fs_src);
       m_program = GenerateProgram(vs, fs);
     }
-    void use(const Vector2& screenSize, const Light* light, const Camera::Camera* camera, const Matrix4& mvp, const GBuffer* gbuffer, GLuint skyboxTex) const {
+    void use(const Vector2& screenSize, const Light* light, const Camera::Camera* camera, const Matrix4& mvp, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
       glUseProgram(m_program);
 
       glUniform2f(SH_UN_SCREENSIZE, screenSize.x, screenSize.y);
@@ -124,6 +130,7 @@ public:
 
       glUniform3f(SH_UN_LIGHTPOS, light->position.x, light->position.y, light->position.z);
       glUniform3f(SH_UN_LIGHTCOLOR, light->color.x, light->color.y, light->color.z);
+      glUniform1f(SH_UN_LIGHTNESS, lightness);
     }
     static int SH_IN_VPOS;
     static int SH_UN_CAMERA;
@@ -138,6 +145,7 @@ public:
     static int SH_UN_LIGHTPOS;
     static int SH_UN_LIGHTCOLOR;
     static int SH_UN_LIGHTINGTEX;
+    static int SH_UN_LIGHTNESS;
 };
 
 int LightingShader::SH_IN_VPOS = 0;
@@ -153,4 +161,5 @@ int LightingShader::SH_UN_SCREENSIZE= 9;
 int LightingShader::SH_UN_LIGHTPOS= 10;
 int LightingShader::SH_UN_LIGHTCOLOR= 11;
 int LightingShader::SH_UN_SKYBOXTEX= 12;
+int LightingShader::SH_UN_LIGHTNESS = 13;
 

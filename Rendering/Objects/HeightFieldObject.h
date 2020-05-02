@@ -13,7 +13,7 @@ public:
         m_mesh = std::make_unique<HeightFieldMesh>(data, map->getNbRows(), map->getNbColumns(), max.y - min.y, repo->getGBufferShader());
         m_material = GMaterial(
                 repo->getGrassTexture(),
-                repo->getBlackTexture());
+                createTextureColor(0, 0.0, 0));
       }
 
     void draw(const Camera::Camera* camera) const override {
