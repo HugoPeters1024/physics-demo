@@ -6,10 +6,12 @@ class ResourceRepo
         std::shared_ptr<GenericMesh> m_sphere;
         std::shared_ptr<SkyboxMesh> m_skybox;
         std::shared_ptr<QuadMesh> m_quad;
+        std::shared_ptr<QuadMesh> m_post_quad;
         std::shared_ptr<LightingQuadMesh> m_lighting_quad;
         std::shared_ptr<VolumeMesh> m_volume_mesh;
         std::shared_ptr<DefaultShader> m_default_shader;
         std::shared_ptr<QuadShader> m_quad_shader;
+        std::shared_ptr<PostProcessingShader> m_post_shader;
         std::shared_ptr<GBufferShader> m_gbuffer_shader;
         std::shared_ptr<ShaderSkyBox> m_gbuffer_skybox_shader;
         std::shared_ptr<LightingShader> m_lighting_shader;
@@ -39,6 +41,9 @@ public:
           m_logger.logDebug("Compiling lighting shader");
           m_lighting_shader = std::make_shared<LightingShader>();
 
+          m_logger.logDebug("Compiling post processing shader");
+          m_post_shader = std::make_shared<PostProcessingShader>();
+
           m_logger.logDebug("Building cube mesh");
           m_cube = std::make_shared<GenericMesh>("Models/cube.obj", getGBufferShader());
 
@@ -50,6 +55,9 @@ public:
 
           m_logger.logDebug("Building quad mesh");
           m_quad = std::make_shared<QuadMesh>(getQuadShader());
+
+          m_logger.logDebug("Building post quad mesh");
+          m_post_quad = std::make_shared<QuadMesh>(getPostProcessingShader());
 
           m_logger.logDebug("Building lighting quad mesh");
           m_lighting_quad = std::make_shared<LightingQuadMesh>(getLightingShader());
@@ -83,10 +91,12 @@ public:
         inline const GenericMesh* getSphereMesh() const { return m_sphere.get(); }
         inline const SkyboxMesh* getSkyboxMesh() const { return m_skybox.get(); }
         inline const QuadMesh* getQuadMesh() const { return m_quad.get(); }
+        inline const QuadMesh* getPostQuadMesh() const { return m_post_quad.get(); }
         inline const LightingQuadMesh* getLightingQuadMesh() const { return m_lighting_quad.get(); }
         inline const VolumeMesh* getVolumeMesh() const { return m_volume_mesh.get(); }
         inline const DefaultShader* getDefaultShader() const { return m_default_shader.get(); }
         inline const QuadShader* getQuadShader() const { return m_quad_shader.get(); }
+        inline const PostProcessingShader* getPostProcessingShader() const { return m_post_shader.get(); }
         inline const GBufferShader* getGBufferShader() const { return m_gbuffer_shader.get(); }
         inline const ShaderSkyBox* getGBufferShaderSkybox() const { return m_gbuffer_skybox_shader.get(); }
         inline const LightingShader* getLightingShader() const { return m_lighting_shader.get(); }

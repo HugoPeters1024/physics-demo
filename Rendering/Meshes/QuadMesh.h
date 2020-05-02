@@ -2,9 +2,9 @@ class QuadMesh
 {
 private:
     GLuint m_vao, m_vbo, m_veb;
-    const QuadShader* m_shader;
+    const IQuadShader* m_shader;
 public:
-    QuadMesh(const QuadShader* shader)
+    QuadMesh(const IQuadShader* shader)
     {
       m_shader = shader;
       glGenVertexArrays(1, &m_vao);
@@ -31,8 +31,8 @@ public:
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_veb);
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-      glEnableVertexAttribArray(QuadShader::SH_IN_VPOS);
-      glVertexAttribPointer(QuadShader::SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * 0));
+      glEnableVertexAttribArray(shader->SH_IN_VPOS);
+      glVertexAttribPointer(shader->SH_IN_VPOS, 3, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * 0));
       glVertexArrayElementBuffer(m_vao, m_veb);
 
       glBindVertexArray(0);

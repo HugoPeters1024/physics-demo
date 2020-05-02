@@ -27,8 +27,7 @@ void main()
 }
 )";
 
-class QuadShader
-{
+class QuadShader : public IQuadShader {
 private:
     GLuint m_shader;
 public:
@@ -38,14 +37,11 @@ public:
       m_shader = GenerateProgram(vs, fs);
     }
 
-    void use(GLuint texture) const
+    void use(GLuint texture) const override
     {
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, texture);
       glUseProgram(m_shader);
     }
-
-    static int SH_IN_VPOS;
 };
 
-int QuadShader::SH_IN_VPOS = 0;
