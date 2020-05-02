@@ -35,9 +35,9 @@ public:
       glBindVertexArray(0);
     }
 
-    void draw(const Vector2& screenSize, const Light* light, const Camera::Camera* camera, const Matrix4& mvp, const GBuffer* gbuffer) const {
+    void draw(const Vector2& screenSize, const Light* light, const Camera::Camera* camera, const Matrix4& mvp, const GBuffer* gbuffer, GLuint skyboxTex) const {
       glBindVertexArray(m_vao);
-      m_shader->use(screenSize, light, camera, mvp, gbuffer);
+      m_shader->use(screenSize, light, camera, mvp, gbuffer, skyboxTex);
       glDrawElements(GL_TRIANGLES, m_index_count, GL_UNSIGNED_INT, (void*)nullptr);
       glBindVertexArray(0);
     }

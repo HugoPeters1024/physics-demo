@@ -120,9 +120,9 @@ public:
       glBindVertexArray(0);
 
     }
-    void draw(const Camera::Camera* camera, const Matrix4& mvp, GLuint texture) const {
+    void draw(const Camera::Camera* camera, const Matrix4& mvp, GMaterial material) const {
       glBindVertexArray(m_vao);
-      m_shader->use(camera, mvp, texture);
+      m_shader->use(camera, mvp, material);
       glDrawElements(GL_TRIANGLES, m_vertex_count, GL_UNSIGNED_INT, (void*)nullptr);
       glBindVertexArray(0);
     }

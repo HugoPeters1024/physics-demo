@@ -1,4 +1,5 @@
 #include "Material.h"
+#include "GMaterial.h"
 #include "DefaultShader.h"
 #include "QuadShader.h"
 #include "GBufferShader.h"

@@ -2,7 +2,7 @@ class HeightFieldObject : public ISceneObject {
     std::unique_ptr<HeightFieldMesh> m_mesh;
     const rp3d::ProxyShape* m_shape;
     const rp3d::HeightFieldShape* m_map;
-    GLuint m_texture;
+    GMaterial m_material;
 public:
     HeightFieldObject(const ResourceRepo* repo, const rp3d::ProxyShape* shape, const rp3d::HeightFieldShape* map, float* data)
     {
@@ -11,10 +11,12 @@ public:
         rp3d::Vector3 min, max;
         map->getLocalBounds(min, max);
         m_mesh = std::make_unique<HeightFieldMesh>(data, map->getNbRows(), map->getNbColumns(), max.y - min.y, repo->getGBufferShader());
-        m_texture = repo->getGrassTexture();
+        m_material = GMaterial(
+                repo->getGrassTexture(),
+                repo->getBlackTexture());
       }
 
     void draw(const Camera::Camera* camera) const override {
-        m_mesh->draw(camera, getMvp(m_shape), m_texture);
+        m_mesh->draw(camera, getMvp(m_shape), m_material);
     }
 };

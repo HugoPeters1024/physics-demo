@@ -29,16 +29,19 @@ in vec3 fragNormal;
 in vec3 fragPos;
 in vec2 uv;
 
-layout(location = 2) uniform sampler2D tex;
+layout(location = 2) uniform sampler2D diffuse;
+layout(location = 3) uniform sampler2D lighting;
 
 layout(location = 0) out vec3 o_normal;
 layout(location = 1) out vec3 o_pos;
 layout(location = 2) out vec3 o_albedo;
+layout(location = 3) out vec3 o_lighting;
 
 void main() {
   o_normal = fragNormal;
   o_pos = fragPos;
-  o_albedo = texture(tex, uv).xyz;
+  o_albedo = texture(diffuse, uv).xyz;
+  o_lighting = texture(lighting, uv).xyz;
 }
 )";
 
@@ -55,7 +58,7 @@ public:
       m_program = GenerateProgram(vs, fs);
     }
 
-    void use(const Camera::Camera* camera, const Matrix4& mvp, GLuint texture) const {
+    void use(const Camera::Camera* camera, const Matrix4& mvp, GMaterial material) const {
       glUseProgram(m_program);
 
       mat4x4 e_camera;
@@ -66,9 +69,13 @@ public:
       mvp.unpack(e_mvp);
       glUniformMatrix4fv(SH_UN_MVP, 1, GL_FALSE, (const GLfloat*)e_mvp);
 
-      glUniform1i(SH_UN_TEX, 0);
+      glUniform1i(SH_UN_DIFFUSE, 0);
       glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, texture);
+      glBindTexture(GL_TEXTURE_2D, material.m_diffuse);
+
+      glUniform1i(SH_UN_LIGHTING, 1);
+      glActiveTexture(GL_TEXTURE1);
+      glBindTexture(GL_TEXTURE_2D, material.m_lighting);
     }
 
     static int SH_IN_VPOS;
@@ -77,7 +84,8 @@ public:
 
     static int SH_UN_CAMERA;
     static int SH_UN_MVP;
-    static int SH_UN_TEX;
+    static int SH_UN_DIFFUSE;
+    static int SH_UN_LIGHTING;
 };
 
 int GBufferShader::SH_IN_VPOS = 0;
@@ -86,4 +94,5 @@ int GBufferShader::SH_IN_VUV = 2;
 
 int GBufferShader::SH_UN_CAMERA = 0;
 int GBufferShader::SH_UN_MVP = 1;
-int GBufferShader::SH_UN_TEX = 2;
+int GBufferShader::SH_UN_DIFFUSE = 2;
+int GBufferShader::SH_UN_LIGHTING = 3;

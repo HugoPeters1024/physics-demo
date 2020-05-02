@@ -17,7 +17,7 @@ int main() {
   rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 0.4);
   renderer->addCube(cubeProxy, &boxShape);
 
-  rp3d::SphereShape sphereShape(0.6f);
+  rp3d::SphereShape sphereShape(1.6f);
 
   rp3d::Transform floorTransform(rp3d::Vector3(0,-5,0), rp3d::Quaternion().identity());
   rp3d::RigidBody* floorBody = world.createRigidBody(floorTransform);
@@ -28,15 +28,15 @@ int main() {
   floorMaterial.setFrictionCoefficient(1.0);
   const rp3d::Vector3 floorHalfExtends(10, 0.2, 10);
   rp3d::BoxShape floorShape(floorHalfExtends);
-  float* heightFieldData = generateHeightMap(200, 200, 30, 20);
-  rp3d::HeightFieldShape heightField(200, 200, 0, 30, heightFieldData, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE, 1);
+  float* heightFieldData = generateHeightMap(200, 200, 3, 20);
+  rp3d::HeightFieldShape heightField(200, 200, 0, 3, heightFieldData, rp3d::HeightFieldShape::HeightDataType::HEIGHT_FLOAT_TYPE, 1);
   rp3d::ProxyShape* floorProxy = floorBody->addCollisionShape(&heightField, rp3d::Transform::identity(), 0);
   renderer->addHeightMap(floorProxy, &heightField, heightFieldData);
 
 
   auto sun = new Light();
-  sun->position = Vector3(0,80,0);
-  sun->color = Vector3(1)*20000;
+  sun->position = Vector3(-30,80,0);
+  sun->color = Vector3(1)*13000;
   renderer->addLight(sun);
 
   std::vector<Light*> lights;
@@ -47,7 +47,7 @@ int main() {
     auto light = new Light();
     light->position = Vector3(p * 100, 3, 0),
     light->color = Vector3(p, 1-p, 0.5 + 0.5*sin(p*15)) * 50;
-    renderer->addLight(light);
+    //renderer->addLight(light);
     lights.push_back(light);
   }
 

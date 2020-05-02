@@ -14,10 +14,14 @@ class ResourceRepo
         std::shared_ptr<ShaderSkyBox> m_gbuffer_skybox_shader;
         std::shared_ptr<LightingShader> m_lighting_shader;
         GLuint m_tex_white;
+        GLuint m_tex_grey;
+        GLuint m_tex_black;
         GLuint m_tex_blue;
         GLuint m_tex_grass;
         GLuint m_tex_mars;
         GLuint m_tex_skybox;
+        // Default lighting properties
+        GLuint m_tex_lighting;
 public:
         ResourceRepo(){
           m_logger.logDebug("Compiling default shader");
@@ -55,9 +59,12 @@ public:
 
           m_logger.logDebug("Generating textures");
           m_tex_white = createTextureColor(1, 1, 1);
+          m_tex_grey = createTextureColor(0.7, 0.7, 0.7);
+          m_tex_black = createTextureColor(0, 0, 0);
           m_tex_blue = createTextureColor(0.2f, 0.2f, 1.0f);
           m_tex_grass = loadTexture("Textures/grass.jpg");
           m_tex_mars = loadTexture("Textures/mars.jpg");
+          m_tex_lighting = createTextureColor(0.15, 0.55, 0.3);
 
           m_logger.logDebug("Generating skybox");
           std::vector<std::string> skybox_faces
@@ -84,9 +91,12 @@ public:
         inline const ShaderSkyBox* getGBufferShaderSkybox() const { return m_gbuffer_skybox_shader.get(); }
         inline const LightingShader* getLightingShader() const { return m_lighting_shader.get(); }
         inline const GLuint getWhiteTexture() const { return m_tex_white; }
+        inline const GLuint getGrayTexture() const { return m_tex_grey; }
+        inline const GLuint getBlackTexture() const { return m_tex_black; }
         inline const GLuint getBlueTexture() const { return m_tex_blue; }
         inline const GLuint getGrassTexture() const { return m_tex_grass; }
         inline const GLuint getMarsTexture() const { return m_tex_mars; }
         inline const GLuint getSkyBoxTexture() const { return m_tex_skybox; }
+        inline const GLuint getLightingTexture() const { return m_tex_lighting; }
 
 };

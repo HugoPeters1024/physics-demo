@@ -69,7 +69,6 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   glViewport(0, 0, m_window_width, m_window_height);
 
 
-  resourceRepo->getSkyboxMesh()->draw(camera, Matrix4::FromTranslation(camera->getPosition()) * Matrix4::FromScale(1000), resourceRepo->getSkyBoxTexture());
   //resourceRepo->getQuadMesh()->draw(gbuffer->getAlbedoTexture());
   //resourceRepo->getLightingQuadMesh()->draw(screenSize, camera, gbuffer.get());
   glDisable(GL_DEPTH_TEST);
@@ -77,12 +76,13 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   glBlendFunc(GL_ONE, GL_ONE);
   glCullFace(GL_FRONT);
   for(Light* light : m_lights) {
-    resourceRepo->getVolumeMesh()->draw(screenSize, light, camera, light->getMvp(), gbuffer.get());
+    resourceRepo->getVolumeMesh()->draw(screenSize, light, camera, light->getMvp(), gbuffer.get(), resourceRepo->getSkyBoxTexture());
   }
   glCullFace(GL_BACK);
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
+  resourceRepo->getSkyboxMesh()->draw(camera, Matrix4::FromTranslation(camera->getPosition()) * Matrix4::FromScale(1000), resourceRepo->getSkyBoxTexture());
 
   glfwPollEvents();
   glfwSwapBuffers(m_window);
