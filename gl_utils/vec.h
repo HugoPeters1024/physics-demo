@@ -104,6 +104,10 @@ public:
             std::max(a.y, b.y),
             std::max(a.z, b.z));
   }
+
+  rp3d::Vector3 toRP3D() const {
+    return rp3d::Vector3(x, y, z);
+  }
 };
 
 //Commutative mapping

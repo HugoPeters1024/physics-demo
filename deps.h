@@ -24,7 +24,6 @@
 #include "gl_utils/stb_image.h"
 #include "keyboard.h"
 #include "camera.h"
-#include "CameraRayCaster.h"
 #include "Rendering/Textures/_deps.h"
 #include "Rendering/Lights/_deps.h"
 #include "Rendering/Framebuffers/_deps.h"

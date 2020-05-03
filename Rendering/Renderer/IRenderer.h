@@ -6,7 +6,7 @@ void error_callback(int error, const char* description)
 class IRenderer
 {
 public:
-    virtual void loop(const Camera::Camera* camera) = 0;
+    virtual void loop(const Camera::Camera* camera, float camSpeed) = 0;
     virtual GLFWwindow* getWindowPointer() const = 0;
     virtual bool shouldClose() = 0;
     virtual float getWindowRatio() const = 0;

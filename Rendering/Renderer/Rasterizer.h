@@ -10,7 +10,7 @@ private:
     float m_lightness;
 public:
     Rasterizer();
-    void loop(const Camera::Camera* camera) override;
+    void loop(const Camera::Camera* camera, float camSpeed) override;
     inline GLFWwindow* getWindowPointer() const override { return m_window; }
     inline void addCube(rp3d::ProxyShape* shape, rp3d::BoxShape* box) override { m_scene.push_back(new CubeObject(resourceRepo.get(), shape, box)); }
     inline LanternObject* addLantern(rp3d::ProxyShape* shape, rp3d::BoxShape* box) override {
@@ -62,7 +62,7 @@ Rasterizer::Rasterizer() {
   m_logger.logDebug("Initialized");
 }
 
-void Rasterizer::loop(const Camera::Camera* camera) {
+void Rasterizer::loop(const Camera::Camera* camera, float camSpeed) {
   gbuffer->use();
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -125,6 +125,7 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   // Now draw to the screen using the post quad
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  resourceRepo->getPostProcessingShader()->prepare(camSpeed);
   resourceRepo->getPostQuadMesh()->draw(postbuffer->getOutputTexture());
 
   glfwPollEvents();

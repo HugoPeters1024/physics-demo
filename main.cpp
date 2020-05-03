@@ -2,10 +2,10 @@
 
 int main() {
   std::unique_ptr<IRenderer> renderer = std::make_unique<Rasterizer>();
-  Camera::Camera camera(1.6f);
+  Camera::Camera camera(1.6f, 5);
   Keyboards::Keyboard keyboard(renderer->getWindowPointer());
 
-  rp3d::Vector3 gravity(0, -9.81f, 0);
+  rp3d::Vector3 gravity(0, -89.81f, 0);
   rp3d::DynamicsWorld world(gravity);
 
   rp3d::Transform cubeTransform(rp3d::Vector3(0,10,0), rp3d::Quaternion::fromEulerAngles(0, 0, 0.2f));
@@ -18,6 +18,15 @@ int main() {
   renderer->addCube(cubeProxy, &boxShape);
 
   rp3d::SphereShape sphereShape(1.6f);
+  rp3d::Transform sphereTransform(rp3d::Vector3(1.6, 10, 0),
+                                  rp3d::Quaternion::fromEulerAngles(0, 0, 0));
+  rp3d::RigidBody *sphereBody = world.createRigidBody(sphereTransform);
+  sphereBody->setAngularDamping(0.3);
+  sphereBody->setLinearDamping(0.4);
+  rp3d::Material &sphereMaterial = sphereBody->getMaterial();
+  sphereMaterial.setBounciness(0.3);
+  rp3d::ProxyShape *sphereProxy = sphereBody->addCollisionShape(&sphereShape, sphereTransform, 1);
+  //renderer->addSphere(sphereProxy, &sphereShape);
 
   rp3d::Transform floorTransform(rp3d::Vector3(0,-5,0), rp3d::Quaternion().identity());
   rp3d::RigidBody* floorBody = world.createRigidBody(floorTransform);
@@ -65,21 +74,21 @@ int main() {
 
   for(int i=0; i<60; i++) {
     float f = (float)i / 60.f;
-    rp3d::Transform cubeTransform(rp3d::Vector3(50*sin(f*10), 2*i, 50 * cos(f*10)),
+    rp3d::Transform cubeTransform(rp3d::Vector3(50*sin(f*6), 2*i, 50 * cos(f*6)),
                                   rp3d::Quaternion::fromEulerAngles(0,0,0));
     rp3d::RigidBody *cubeBody = world.createRigidBody(cubeTransform);
     cubeBody->setType(reactphysics3d::BodyType::STATIC);
     rp3d::Material &cubeMaterial = cubeBody->getMaterial();
     cubeMaterial.setBounciness(0.3);
     cubeMaterial.setFrictionCoefficient(1);
-    rp3d::ProxyShape *cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
+    rp3d::ProxyShape *cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 0.2);
     renderer->addCube(cubeProxy, &boxShape);
 
-    rp3d::Transform lanternTransform(rp3d::Vector3(50 * sin(f*10), 2*i+5, 50 * cos(f*10)),
+    rp3d::Transform lanternTransform(rp3d::Vector3(50 * sin(f*6), 2*i+5, 50 * cos(f*6)),
                                      rp3d::Quaternion().identity());
     rp3d::RigidBody *lanternBody = world.createRigidBody(lanternTransform);
     //lanternBody->setType(reactphysics3d::BodyType::STATIC);
-    rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
+    rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 0.01);
     auto lantern = renderer->addLantern(lanternProxy, &lanternShape);
     lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 1000;
   }
@@ -115,7 +124,7 @@ int main() {
                                        rp3d::Quaternion().identity());
       rp3d::RigidBody *lanternBody = world.createRigidBody(lanternTransform);
       //lanternBody->setType(reactphysics3d::BodyType::STATIC);
-      rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
+      rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 0.1);
       auto lantern = renderer->addLantern(lanternProxy, &lanternShape);
       lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 70;
       lantern->getLight()->quadratic = 3;
@@ -124,21 +133,23 @@ int main() {
     world.update(1.0/60.0);
     keyboard.swapBuffers();
 
-    Vector3 camPos = camera.getPosition();
-    CameraRayCaster cacher(&camera);
+    double mouseX, mouseY;
+    int windowW, windowH;
+    glfwGetWindowSize(renderer->getWindowPointer(), &windowW, &windowH);
+    glfwGetCursorPos(renderer->getWindowPointer(), &mouseX, &mouseY);
+    Vector2 offset = Vector2(mouseX / windowW, mouseY / windowH) - Vector2(0.5);
+    offset = offset * 100;
+    glfwSetCursorPos(renderer->getWindowPointer(), windowW / 2, windowH / 2);
 
-    rp3d::Ray ray1(rp3d::Vector3(camPos.x, camPos.y + 10, camPos.z), rp3d::Vector3(camPos.x, camPos.y - 10, camPos.z+0.1));
-    world.raycast(ray1, &cacher);
-    rp3d::Ray ray2(rp3d::Vector3(camPos.x, camPos.y + 10, camPos.z), rp3d::Vector3(camPos.x+0.1, camPos.y - 10, camPos.z));
-    world.raycast(ray2, &cacher);
-    rp3d::Ray ray3(rp3d::Vector3(camPos.x, camPos.y + 10, camPos.z), rp3d::Vector3(camPos.x-0.1, camPos.y-10, camPos.z));
-    world.raycast(ray3, &cacher);
-    rp3d::Ray ray4(rp3d::Vector3(camPos.x, camPos.y + 10, camPos.z), rp3d::Vector3(camPos.x, camPos.y - 10, camPos.z-0.1));
-    world.raycast(ray4, &cacher);
-
-    camera.update(renderer->getWindowRatio(), &keyboard, cacher.distToGround);
-    g_logInfo("%f", cacher.distToGround);
-    renderer->loop(&camera);
+    camera.pos = sphereProxy->getLocalToWorldTransform().getPosition();
+    rp3d::Vector3 camVelocity = sphereBody->getLinearVelocity();
+    float camSpeed = camVelocity.y;
+    float latteralSpeed = Vector2(camVelocity.x, camVelocity.z).length();
+    if (keyboard.isPressed(Keyboards::JUMP)) { sphereBody->applyForceToCenterOfMass(rp3d::Vector3(0,1,0)*4000); }
+    if (keyboard.isDown(Keyboards::MOVE_FORWARD) && latteralSpeed < 33) { sphereBody->applyForceToCenterOfMass(camera.moveDir().toRP3D() * 80); }
+    if (keyboard.isDown(Keyboards::MOVE_BACKWARD) && latteralSpeed < 33) { sphereBody->applyForceToCenterOfMass(camera.moveDir().toRP3D() * -80); }
+    camera.update(renderer->getWindowRatio(), &keyboard, offset);
+    renderer->loop(&camera, camSpeed);
 //    printf("%s\n", body->getLinearVelocity().to_string().c_str());
 
   }

@@ -20,6 +20,7 @@ in vec2 uv;
 
 layout(location = 0) uniform sampler2D tex;
 layout(location = 1) uniform float iTime;
+layout(location = 2) uniform float cameraSpeed;
 
 out vec4 color;
 
@@ -33,9 +34,15 @@ void main()
 
   float disfromcenter = dot(fromcenter*2, fromcenter*2);
 
-  color.r = texture(tex, uv + abberation * 0).r;
-  color.g = texture(tex, uv + abberation * 1).g;
-  color.b = texture(tex, uv + abberation * 2).b;
+  float corr = 0.1f;
+  for(int i=0; i<10; i++)
+  {
+    float f = i * corr * 3.1415 * 2;
+    vec2 offset = vec2(cos(f), sin(f)) * 0.03 * disfromcenter * cameraSpeed * 0.01;
+    color.r += texture(tex, uv + abberation * 0 + offset).r * corr;
+    color.g += texture(tex, uv + abberation * 1 + offset).g * corr;
+    color.b += texture(tex, uv + abberation * 2 + offset).b * corr;
+  }
   color *= (1-disfromcenter*0.6);
 }
 )";
@@ -50,15 +57,21 @@ public:
       m_program = GenerateProgram(vs, fs);
     }
 
-    void use(GLuint texture) const override {
+    void prepare(float camSpeed) const {
+      glUseProgram(m_program);
+      glUniform1f(SH_UN_CAMSPEED, camSpeed);
+    }
+
+    void use(GLuint texture) const {
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, texture);
-      glUseProgram(m_program);
 
       glUniform1f(SH_UN_TIME, glfwGetTime());
     }
 
     static int SH_UN_TIME;
+    static int SH_UN_CAMSPEED;
 };
 
 int PostProcessingShader::SH_UN_TIME = 1;
+int PostProcessingShader::SH_UN_CAMSPEED = 2;
