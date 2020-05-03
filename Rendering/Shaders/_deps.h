@@ -6,5 +6,6 @@
 #include "GBufferShader.h"
 #include "ShaderSkyBox.h"
 #include "LightingShader.h"
+#include "HaloShader.h"
 #include "LightingSkyboxShader.h"
 #include "PostProcessingShader.h"

@@ -23,7 +23,10 @@ public:
 
     std::vector<Light*> getLights() override {
       std::vector<Light*> ret;
-      m_light.position = m_shape->getLocalToWorldTransform().getPosition();
+      rp3d::Transform offset(rp3d::Vector3(0,1,0), rp3d::Quaternion().identity());
+      auto global = m_shape->getLocalToWorldTransform();
+      auto transform = global * offset;
+      m_light.position = transform.getPosition();
       ret.push_back(&m_light);
       return ret;
     }

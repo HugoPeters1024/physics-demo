@@ -10,12 +10,14 @@ class ResourceRepo
         std::shared_ptr<QuadMesh> m_post_quad;
         std::shared_ptr<LightingQuadMesh> m_lighting_quad;
         std::shared_ptr<VolumeMesh> m_volume_mesh;
+        std::shared_ptr<HaloMesh> m_halo_mesh;
         std::shared_ptr<DefaultShader> m_default_shader;
         std::shared_ptr<QuadShader> m_quad_shader;
         std::shared_ptr<PostProcessingShader> m_post_shader;
         std::shared_ptr<GBufferShader> m_gbuffer_shader;
         std::shared_ptr<ShaderSkyBox> m_gbuffer_skybox_shader;
         std::shared_ptr<LightingShader> m_lighting_shader;
+        std::shared_ptr<HaloShader> m_halo_shader;
         std::shared_ptr<LightingSkyboxShader> m_lighting_skybox_shader;
         GLuint m_tex_white;
         GLuint m_tex_grey;
@@ -42,6 +44,9 @@ public:
 
           m_logger.logDebug("Compiling lighting shader");
           m_lighting_shader = std::make_shared<LightingShader>();
+
+          m_logger.logDebug("Compiling halo shader");
+          m_halo_shader = std::make_shared<HaloShader>();
 
           m_logger.logDebug("Compiling lighting skybox shader");
           m_lighting_skybox_shader = std::make_shared<LightingSkyboxShader>();
@@ -73,6 +78,9 @@ public:
           m_logger.logDebug("Building volume quad mesh");
           m_volume_mesh = std::make_shared<VolumeMesh>(getLightingShader());
 
+          m_logger.logDebug("Building volume quad mesh");
+          m_halo_mesh = std::make_shared<HaloMesh>(getHaloShader());
+
           m_logger.logDebug("Generating textures");
           m_tex_white = createTextureColor(1, 1, 1);
           m_tex_grey = createTextureColor(0.7, 0.7, 0.7);
@@ -103,12 +111,14 @@ public:
         inline const QuadMesh* getPostQuadMesh() const { return m_post_quad.get(); }
         inline const LightingQuadMesh* getLightingQuadMesh() const { return m_lighting_quad.get(); }
         inline const VolumeMesh* getVolumeMesh() const { return m_volume_mesh.get(); }
+        inline const HaloMesh* getHaloMesh() const { return m_halo_mesh.get(); }
         inline const DefaultShader* getDefaultShader() const { return m_default_shader.get(); }
         inline const QuadShader* getQuadShader() const { return m_quad_shader.get(); }
         inline const PostProcessingShader* getPostProcessingShader() const { return m_post_shader.get(); }
         inline const GBufferShader* getGBufferShader() const { return m_gbuffer_shader.get(); }
         inline const ShaderSkyBox* getGBufferShaderSkybox() const { return m_gbuffer_skybox_shader.get(); }
         inline const LightingShader* getLightingShader() const { return m_lighting_shader.get(); }
+        inline const HaloShader* getHaloShader() const { return m_halo_shader.get(); }
         inline const LightingSkyboxShader* getLightingSkyboxShader() const { return m_lighting_skybox_shader.get(); }
         inline const GLuint getWhiteTexture() const { return m_tex_white; }
         inline const GLuint getGrayTexture() const { return m_tex_grey; }

@@ -36,11 +36,13 @@ public:
       glVertexArrayElementBuffer(m_vao, m_veb);
       glBindVertexArray(0);
     }
-
-    void draw(const Vector2& screenSize, Light* light, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
-      m_shader->use(screenSize, light, camera, light->getMvp(), gbuffer, skyboxTex, lightness);
+    void prepare(const Vector2 &screenSize, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
+      m_shader->prepare(screenSize, camera, gbuffer, skyboxTex, lightness);
       glBindVertexArray(m_vao);
+    }
+
+    void draw(Light* light) const {
+      m_shader->use(light, light->getMvp());
       glDrawElements(GL_TRIANGLES, m_index_count, GL_UNSIGNED_INT, (void*)nullptr);
-      glBindVertexArray(0);
     }
 };

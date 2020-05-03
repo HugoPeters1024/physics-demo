@@ -25,6 +25,7 @@ public:
   Vector2& operator -= (const Vector2 &o) { x -= o.x; y -= o.y; return *this; }
   Vector2 operator - () const { return Vector2(-x, -y); }
   void print() { printf("(%f, %f)\n", x, y); }
+  static float dot(const Vector2 &a, const Vector2& b) { return a.x * b.x + a.y * b.y; }
 };
 
 
@@ -74,6 +75,7 @@ public:
   Vector3 operator - (const Vector3 &o) const { return Vector3(x-o.x, y-o.y, z-o.z); }
   Vector3& operator -= (const Vector3 &o) { x -= o.x; y -= o.y; z -= o.z; return *this; }
   Vector3 operator - () const { return Vector3(-x, -y, -z); }
+  Vector2 xz() const { return Vector2(x, z); }
   void unpack(vec3 &v) const { v[0] = x, v[1] = y, v[2] = z; }
   void print() const { printf("(%f, %f, %f)\n", x, y, z); }
 

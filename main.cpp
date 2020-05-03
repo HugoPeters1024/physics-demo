@@ -80,16 +80,16 @@ int main() {
     //lanternBody->setType(reactphysics3d::BodyType::STATIC);
     rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
     auto lantern = renderer->addLantern(lanternProxy, &lanternShape);
-    lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 70;
+    lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 100;
   }
 
   int tick=1;
   while(!renderer->shouldClose())
   {
-    float lightness = std::fmax(1 - glfwGetTime() / 10, 0);
+    float lightness = std::fmax(1 - glfwGetTime() / 40.0f, 0.3f);
     sun->color = Vector3(1) * 3000 * lightness;
     renderer->setLightness(lightness);
-    if (tick++%81 == 0) {
+    if (tick++%40 == 0) {
       /*
       rp3d::Transform cubeTransform(rp3d::Vector3(10*sin(glfwGetTime()),35,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
       rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
@@ -110,24 +110,14 @@ int main() {
       rp3d::ProxyShape *sphereProxy = sphereBody->addCollisionShape(&sphereShape, cubeTransform, 100);
       renderer->addSphere(sphereProxy, &sphereShape);
        */
-
-      if (tick % 2 == 0) {
-        rp3d::Transform cubeTransform(rp3d::Vector3(10*sin(glfwGetTime()),35,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
-        rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
-        rp3d::Material &cubeMaterial = cubeBody->getMaterial();
-        cubeMaterial.setBounciness(0.3);
-        cubeMaterial.setFrictionCoefficient(1);
-        rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
-        renderer->addCube(cubeProxy, &boxShape);
-      } else {
-        rp3d::Transform lanternTransform(rp3d::Vector3(20 * sin(glfwGetTime()), 5, 20 * cos(glfwGetTime())),
-                                         rp3d::Quaternion().identity());
-        rp3d::RigidBody *lanternBody = world.createRigidBody(lanternTransform);
-        //lanternBody->setType(reactphysics3d::BodyType::STATIC);
-        rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
-        auto lantern = renderer->addLantern(lanternProxy, &lanternShape);
-        lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 70;
-      }
+      rp3d::Transform lanternTransform(rp3d::Vector3(20 * sin(glfwGetTime()), 5, 20 * cos(glfwGetTime())),
+                                       rp3d::Quaternion().identity());
+      rp3d::RigidBody *lanternBody = world.createRigidBody(lanternTransform);
+      //lanternBody->setType(reactphysics3d::BodyType::STATIC);
+      rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
+      auto lantern = renderer->addLantern(lanternProxy, &lanternShape);
+      lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 70;
+      lantern->getLight()->quadratic = 3;
     }
 
     world.update(1.0/60.0);
@@ -136,13 +126,13 @@ int main() {
     Vector3 camPos = camera.getPosition();
     CameraRayCaster cacher(&camera);
 
-    rp3d::Ray ray1(rp3d::Vector3(camPos.x, 100, camPos.z), rp3d::Vector3(camPos.x, -100, camPos.z+0.1));
+    rp3d::Ray ray1(rp3d::Vector3(camPos.x, camPos.y + 1, camPos.z), rp3d::Vector3(camPos.x, -100, camPos.z+0.1));
     world.raycast(ray1, &cacher);
-    rp3d::Ray ray2(rp3d::Vector3(camPos.x, 100, camPos.z), rp3d::Vector3(camPos.x+0.1, -100, camPos.z));
+    rp3d::Ray ray2(rp3d::Vector3(camPos.x, camPos.y + 1, camPos.z), rp3d::Vector3(camPos.x+0.1, -100, camPos.z));
     world.raycast(ray2, &cacher);
-    rp3d::Ray ray3(rp3d::Vector3(camPos.x, 100, camPos.z), rp3d::Vector3(camPos.x-0.1, -100, camPos.z));
+    rp3d::Ray ray3(rp3d::Vector3(camPos.x, camPos.y + 1, camPos.z), rp3d::Vector3(camPos.x-0.1, -100, camPos.z));
     world.raycast(ray3, &cacher);
-    rp3d::Ray ray4(rp3d::Vector3(camPos.x, 100, camPos.z), rp3d::Vector3(camPos.x, -100, camPos.z-0.1));
+    rp3d::Ray ray4(rp3d::Vector3(camPos.x, camPos.y + 1, camPos.z), rp3d::Vector3(camPos.x, -100, camPos.z-0.1));
     world.raycast(ray4, &cacher);
 
     renderer->loop(&camera);

@@ -53,6 +53,7 @@ static const char* lighting_fs_src = R"(
               return;
           }
 
+
           vec3 fragPos = texture(posTex, uv).xyz;
           vec3 fragColor = texture(albedoTex, uv).xyz;
 
@@ -80,10 +81,7 @@ static const char* lighting_fs_src = R"(
           float ambient = 0.0f;
           float albedoDamp = max(1 - lightingValues.y - lightingValues.z, 0);
 
-          color += vec4(
-             ambient * fragColor + (diffuse + spec) * albedoDamp * fragColor * lightCol * falloff, 1);
-
-          color = clamp(color, 0,1);
+          color = vec4(ambient * fragColor + (diffuse + spec) * albedoDamp * fragColor * lightCol * falloff, 1);
       }
     )";
 
@@ -96,23 +94,16 @@ public:
       GLuint fs = CompileShader(GL_FRAGMENT_SHADER, lighting_fs_src);
       m_program = GenerateProgram(vs, fs);
     }
-    void use(const Vector2& screenSize, const Light* light, const Camera::Camera* camera, const Matrix4& mvp, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
+    void prepare(const Vector2 screenSize, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
       glUseProgram(m_program);
-
       glUniform2f(SH_UN_SCREENSIZE, screenSize.x, screenSize.y);
 
       mat4x4 e_camera;
       camera->getMatrix().unpack(e_camera);
       glUniformMatrix4fv(SH_UN_CAMERA, 1, GL_FALSE, (const GLfloat*)e_camera);
 
-      mat4x4 e_mvp;
-      mvp.unpack(e_mvp);
-      glUniformMatrix4fv(SH_UN_MVP, 1, GL_FALSE, (const GLfloat*)e_mvp);
-
       Vector3 camPos = camera->getPosition();
       glUniform3f(SH_UN_CAMERA_POS, camPos.x, camPos.y, camPos.z);
-
-      glUniform1f(SH_UN_TIME, glfwGetTime());
 
       glUniform1i(SH_UN_POSTEX, 0);
       glActiveTexture(GL_TEXTURE0);
@@ -134,10 +125,18 @@ public:
       glActiveTexture(GL_TEXTURE4);
       glBindTexture(GL_TEXTURE_2D, gbuffer->getLightingTexture());
 
+      glUniform1f(SH_UN_LIGHTNESS, lightness);
+      glUniform1f(SH_UN_TIME, glfwGetTime());
+    }
+    void use(const Light* light, const Matrix4& mvp) const {
+
+      mat4x4 e_mvp;
+      mvp.unpack(e_mvp);
+      glUniformMatrix4fv(SH_UN_MVP, 1, GL_FALSE, (const GLfloat*)e_mvp);
+
       glUniform3f(SH_UN_LIGHTINGPROPERTIES, light->constant, light->linear, light->quadratic);
       glUniform3f(SH_UN_LIGHTPOS, light->position.x, light->position.y, light->position.z);
       glUniform3f(SH_UN_LIGHTCOLOR, light->color.x, light->color.y, light->color.z);
-      glUniform1f(SH_UN_LIGHTNESS, lightness);
     }
     static int SH_IN_VPOS;
     static int SH_UN_CAMERA;

@@ -94,32 +94,32 @@ void Rasterizer::loop(const Camera::Camera* camera) {
           m_lightness);
 
   glDisable(GL_DEPTH_TEST);
-  glDepthMask(GL_FALSE);
   glEnable(GL_BLEND);
   glBlendFunc(GL_ONE, GL_ONE);
-
-
   resourceRepo->getLightingQuadMesh()->draw(
           screenSize,
           camera,
           gbuffer.get(),
           resourceRepo->getSkyBoxTexture(),
           m_lightness);
-
   glCullFace(GL_FRONT);
+
+  resourceRepo->getVolumeMesh()->prepare(screenSize, camera, gbuffer.get(), resourceRepo->getSkyBoxTexture(), m_lightness);
   for(Light* light : all_lights) {
-    resourceRepo->getVolumeMesh()->draw(
-            screenSize,
-            light,
-            camera,
-            gbuffer.get(),
-            resourceRepo->getSkyBoxTexture(),
-            m_lightness);
+    resourceRepo->getVolumeMesh()->draw(light);
   }
   glCullFace(GL_BACK);
-  glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+
+  glDepthMask(GL_FALSE);
+  resourceRepo->getHaloMesh()->prepare(camera);
+  for(Light* light : all_lights) {
+    resourceRepo->getHaloMesh()->draw(light, camera);
+  }
   glDepthMask(GL_TRUE);
+  glEnable(GL_CULL_FACE);
+  glDisable(GL_BLEND);
 
   // Now draw to the screen using the post quad
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
