@@ -47,7 +47,7 @@ public:
 
     void draw(const Camera::Camera* camera, const Matrix4& mvp, GMaterial material) const {
       glBindVertexArray(m_vao);
-      m_shader->use(camera, mvp, material);
+      m_shader->use(mvp, material);
       glDrawElements(GL_TRIANGLES, m_index_count, GL_UNSIGNED_INT, (void*)nullptr);
       glBindVertexArray(0);
     }

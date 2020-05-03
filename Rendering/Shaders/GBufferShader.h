@@ -58,13 +58,15 @@ public:
       m_program = GenerateProgram(vs, fs);
     }
 
-    void use(const Camera::Camera* camera, const Matrix4& mvp, GMaterial material) const {
+    void prepare(const Camera::Camera* camera) const {
       glUseProgram(m_program);
 
       mat4x4 e_camera;
       camera->getMatrix().unpack(e_camera);
       glUniformMatrix4fv(SH_UN_CAMERA, 1, GL_FALSE, (const GLfloat*)e_camera);
+    }
 
+    void use(const Matrix4& mvp, GMaterial material) const {
       mat4x4 e_mvp;
       mvp.unpack(e_mvp);
       glUniformMatrix4fv(SH_UN_MVP, 1, GL_FALSE, (const GLfloat*)e_mvp);

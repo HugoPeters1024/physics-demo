@@ -70,6 +70,7 @@ void Rasterizer::loop(const Camera::Camera* camera) {
   for(auto light : m_lights)
     all_lights.push_back(light);
 
+  resourceRepo->getGBufferShader()->prepare(camera);
   for (auto &obj : m_scene) {
     auto extra_lights = obj->getLights();
     all_lights.insert(all_lights.end(), extra_lights.begin(), extra_lights.end());
