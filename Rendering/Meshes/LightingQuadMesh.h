@@ -2,9 +2,9 @@ class LightingQuadMesh
 {
 private:
     GLuint m_vao, m_vbo, m_veb;
-    const LightingShader* m_shader;
+    const LightingSkyboxShader* m_shader;
 public:
-    LightingQuadMesh(const LightingShader* shader)
+    LightingQuadMesh(const LightingSkyboxShader* shader)
     {
       m_shader = shader;
       glGenVertexArrays(1, &m_vao);
@@ -38,9 +38,9 @@ public:
       glBindVertexArray(0);
     }
 
-    void draw(const Vector2 &screenSize, const Light* light, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
+    void draw(const Vector2 &screenSize, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
       glBindVertexArray(m_vao);
-      m_shader->use(screenSize, light, camera, Matrix4::Identity(), gbuffer, skyboxTex, lightness);
+      m_shader->use(screenSize, camera, Matrix4::Identity(), gbuffer, skyboxTex, lightness);
       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void*)nullptr);
       glBindVertexArray(0);
     }

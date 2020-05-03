@@ -8,5 +8,9 @@ protected:
     }
 public:
     virtual void draw(const Camera::Camera* camera) const = 0;
+    virtual std::vector<Light*> getLights()
+    {
+      return std::vector<Light*>();
+    }
 };
 

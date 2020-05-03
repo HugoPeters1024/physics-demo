@@ -4,15 +4,19 @@ private:
     GLuint m_vbo;
     GLuint m_veb;
     GLuint m_index_count;
+    BoundingBox boundingBox;
     const GBufferShader* m_shader;
+    float m_scale;
 
 public:
-    GenericMesh(const char* modelFile, const GBufferShader* shader) {
+    GenericMesh(const char* modelFile, const GBufferShader* shader, float scale = 1) {
       m_shader = shader;
+      m_scale = scale;
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
-      auto obj = cObj(modelFile);
+      auto obj = cObj(modelFile, scale);
+      boundingBox = obj.getBoundingBox();
 
       //float vertices[obj.vertexCount()*6];
       //GLubyte indices[obj.faceCount()*3];
@@ -47,4 +51,6 @@ public:
       glDrawElements(GL_TRIANGLES, m_index_count, GL_UNSIGNED_INT, (void*)nullptr);
       glBindVertexArray(0);
     }
+
+    inline BoundingBox getBoundingBox() const { return boundingBox; }
 };

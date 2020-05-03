@@ -1,4 +1,5 @@
 #include "ISceneObject.h"
 #include "CubeObject.h"
+#include "LanternObject.h"
 #include "SphereObject.h"
 #include "HeightFieldObject.h"

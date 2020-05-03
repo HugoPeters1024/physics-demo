@@ -4,6 +4,7 @@ class ResourceRepo
         Logger m_logger = Logger("ResourceRepo");
         std::shared_ptr<GenericMesh> m_cube;
         std::shared_ptr<GenericMesh> m_sphere;
+        std::shared_ptr<GenericMesh> m_lamp;
         std::shared_ptr<SkyboxMesh> m_skybox;
         std::shared_ptr<QuadMesh> m_quad;
         std::shared_ptr<QuadMesh> m_post_quad;
@@ -15,6 +16,7 @@ class ResourceRepo
         std::shared_ptr<GBufferShader> m_gbuffer_shader;
         std::shared_ptr<ShaderSkyBox> m_gbuffer_skybox_shader;
         std::shared_ptr<LightingShader> m_lighting_shader;
+        std::shared_ptr<LightingSkyboxShader> m_lighting_skybox_shader;
         GLuint m_tex_white;
         GLuint m_tex_grey;
         GLuint m_tex_black;
@@ -41,11 +43,17 @@ public:
           m_logger.logDebug("Compiling lighting shader");
           m_lighting_shader = std::make_shared<LightingShader>();
 
+          m_logger.logDebug("Compiling lighting skybox shader");
+          m_lighting_skybox_shader = std::make_shared<LightingSkyboxShader>();
+
           m_logger.logDebug("Compiling post processing shader");
           m_post_shader = std::make_shared<PostProcessingShader>();
 
           m_logger.logDebug("Building cube mesh");
           m_cube = std::make_shared<GenericMesh>("Models/cube.obj", getGBufferShader());
+
+          m_logger.logDebug("Building lamp mesh");
+          m_lamp = std::make_shared<GenericMesh>("Models/lamp.obj", getGBufferShader(), 1.0/184);
 
           m_logger.logDebug("Building skybox mesh");
           m_skybox = std::make_shared<SkyboxMesh>("Models/cube.obj", getGBufferShaderSkybox());
@@ -60,7 +68,7 @@ public:
           m_post_quad = std::make_shared<QuadMesh>(getPostProcessingShader());
 
           m_logger.logDebug("Building lighting quad mesh");
-          m_lighting_quad = std::make_shared<LightingQuadMesh>(getLightingShader());
+          m_lighting_quad = std::make_shared<LightingQuadMesh>(getLightingSkyboxShader());
 
           m_logger.logDebug("Building volume quad mesh");
           m_volume_mesh = std::make_shared<VolumeMesh>(getLightingShader());
@@ -89,6 +97,7 @@ public:
         };
         inline const GenericMesh* getCubeMesh() const { return m_cube.get(); }
         inline const GenericMesh* getSphereMesh() const { return m_sphere.get(); }
+        inline const GenericMesh* getLampMesh() const { return m_lamp.get(); }
         inline const SkyboxMesh* getSkyboxMesh() const { return m_skybox.get(); }
         inline const QuadMesh* getQuadMesh() const { return m_quad.get(); }
         inline const QuadMesh* getPostQuadMesh() const { return m_post_quad.get(); }
@@ -100,6 +109,7 @@ public:
         inline const GBufferShader* getGBufferShader() const { return m_gbuffer_shader.get(); }
         inline const ShaderSkyBox* getGBufferShaderSkybox() const { return m_gbuffer_skybox_shader.get(); }
         inline const LightingShader* getLightingShader() const { return m_lighting_shader.get(); }
+        inline const LightingSkyboxShader* getLightingSkyboxShader() const { return m_lighting_skybox_shader.get(); }
         inline const GLuint getWhiteTexture() const { return m_tex_white; }
         inline const GLuint getGrayTexture() const { return m_tex_grey; }
         inline const GLuint getBlackTexture() const { return m_tex_black; }

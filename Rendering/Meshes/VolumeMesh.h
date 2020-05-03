@@ -13,12 +13,14 @@ public:
       glGenVertexArrays(1, &m_vao);
       glBindVertexArray(m_vao);
 
-      auto obj = cObj("Models/sphere.obj");
+      auto obj = cObj("Models/sphere.obj", 1.0 / 18.0);
+      obj.quadsToTriangles();
 
       std::vector<float> vertices;
       std::vector<GLuint> indices;
 
       obj.renderVertexBufferPosOnly(vertices, indices);
+
       m_index_count = indices.size();
 
       glGenBuffers(1, &m_vbo);
@@ -35,9 +37,9 @@ public:
       glBindVertexArray(0);
     }
 
-    void draw(const Vector2& screenSize, const Light* light, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
-      glBindVertexArray(m_vao);
+    void draw(const Vector2& screenSize, Light* light, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
       m_shader->use(screenSize, light, camera, light->getMvp(), gbuffer, skyboxTex, lightness);
+      glBindVertexArray(m_vao);
       glDrawElements(GL_TRIANGLES, m_index_count, GL_UNSIGNED_INT, (void*)nullptr);
       glBindVertexArray(0);
     }

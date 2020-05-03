@@ -8,7 +8,6 @@
 
 #include "vec.h"
 
-
 struct vertex {
     std::vector<float> v;
     void normalize() {
@@ -59,14 +58,17 @@ class cObj {
     std::vector<vertex> normals;
     std::vector<vertex> parameters;
     std::vector<face> faces;
+    BoundingBox boundingBox;
   public:
-    cObj(std::string filename);
+    void quadsToTriangles();
+    cObj(std::string filename, float scale = 1);
     ~cObj() {};
     void renderVertexBufferWithNormalsAndUvInts(std::vector<float> &vbo, std::vector<uint> &indices);
     void renderVertexBufferPosOnly(std::vector<float> &vbo, std::vector<uint> &indices);
+    BoundingBox getBoundingBox() { return boundingBox; }
 };
 
-cObj::cObj(std::string filename) {
+cObj::cObj(std::string filename, float scale) {
     std::ifstream ifs(filename.c_str(), std::ifstream::in);
     std::string line, key;
     while (ifs.good() && !ifs.eof() && std::getline(ifs, line)) {
@@ -79,8 +81,10 @@ cObj::cObj(std::string filename) {
             vertex v; float x;
             while (!stringstream.eof()) {
                 stringstream >> x >> std::ws;
-                v.v.push_back(x);
+                v.v.push_back(x * scale);
             }
+            boundingBox.min = Vector3::min(boundingBox.min, Vector3(v.v[0], v.v[1], v.v[2]));
+            boundingBox.max = Vector3::max(boundingBox.max, Vector3(v.v[0], v.v[1], v.v[2]));
             vertices.push_back(v);
         } else if (key == "vp") { // parameter
             vertex v; float x;
@@ -93,7 +97,7 @@ cObj::cObj(std::string filename) {
             vertex v; float x;
             while (!stringstream.eof()) {
                 stringstream >> x >> std::ws;
-                v.v.push_back(x);
+                v.v.push_back(x * scale);
             }
             texcoords.push_back(v);
         } else if (key == "vn") { // normal
@@ -252,8 +256,6 @@ void cObj::renderVertexBufferPosOnly(std::vector<float> &vbo, std::vector<uint> 
     for(int j=0; j<3; j++)
     {
       auto vIndex = faces[i].vertex[j];
-      auto nIndex = faces[i].normal[j];
-      auto tIndex = faces[i].texture[j];
       float3 data = {
               vertices[vIndex].v[0],
               vertices[vIndex].v[1],
@@ -281,5 +283,48 @@ void cObj::renderVertexBufferPosOnly(std::vector<float> &vbo, std::vector<uint> 
   }
 
   g_logDebug("Converted vbo contains %u entries and has %u indices referring", vbo.size()/8, indices.size());
+}
+
+void cObj::quadsToTriangles()
+{
+  std::vector<face> newfaces;
+  for(face& f : faces)
+  {
+    if (f.vertex.size() == 3)
+    {
+      newfaces.push_back(f);
+      continue;
+    }
+    Vector4 vertices(f.vertex[0], f.vertex[1], f.vertex[2], f.vertex[3]);
+    Vector4 textures(f.texture[0], f.texture[1], f.texture[2], f.texture[3]);
+    Vector4 normals(f.normal[0], f.normal[1], f.normal[2], f.normal[3]);
+
+    face f1;
+    f1.vertex.push_back(vertices.y);
+    f1.vertex.push_back(vertices.z);
+    f1.vertex.push_back(vertices.x);
+    f1.texture.push_back(textures.z);
+    f1.texture.push_back(textures.y);
+    f1.texture.push_back(textures.x);
+    f1.normal.push_back(normals.z);
+    f1.normal.push_back(normals.y);
+    f1.normal.push_back(normals.x);
+
+    face f2;
+    f2.vertex.push_back(vertices.z);
+    f2.vertex.push_back(vertices.w);
+    f2.vertex.push_back(vertices.y);
+    f2.texture.push_back(textures.w);
+    f2.texture.push_back(textures.z);
+    f2.texture.push_back(textures.y);
+    f2.normal.push_back(normals.w);
+    f2.normal.push_back(normals.z);
+    f2.normal.push_back(normals.y);
+
+    newfaces.push_back(f1);
+    newfaces.push_back(f2);
+  }
+
+  faces = newfaces;
 }
 #endif

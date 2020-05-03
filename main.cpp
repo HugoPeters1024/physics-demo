@@ -12,7 +12,7 @@ int main() {
   rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
   cubeBody->setAngularVelocity(rp3d::Vector3(0, 10, 0));
   cubeBody->setLinearVelocity(rp3d::Vector3(0.1, 0, 0));
-  const rp3d::Vector3 cubeHalfExtends(5.5, 5.5, 0.5);
+  const rp3d::Vector3 cubeHalfExtends(5.5, 0.5, 5.5);
   rp3d::BoxShape boxShape(cubeHalfExtends);
   rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 0.4);
   renderer->addCube(cubeProxy, &boxShape);
@@ -21,7 +21,7 @@ int main() {
 
   rp3d::Transform floorTransform(rp3d::Vector3(0,-5,0), rp3d::Quaternion().identity());
   rp3d::RigidBody* floorBody = world.createRigidBody(floorTransform);
-  floorBody->setType(reactphysics3d::BodyType::KINEMATIC);
+  floorBody->setType(reactphysics3d::BodyType::STATIC);
   floorBody->setAngularVelocity(rp3d::Vector3(0, 0, 0));
   rp3d::Material& floorMaterial = floorBody->getMaterial();
   floorMaterial.setBounciness(rp3d::decimal(0.2));
@@ -33,11 +33,22 @@ int main() {
   rp3d::ProxyShape* floorProxy = floorBody->addCollisionShape(&heightField, rp3d::Transform::identity(), 0);
   renderer->addHeightMap(floorProxy, &heightField, heightFieldData);
 
+  rp3d::Transform lanternTransform(rp3d::Vector3(0, 5, 0), rp3d::Quaternion().identity());
+  rp3d::RigidBody* lanternBody = world.createRigidBody(lanternTransform);
+  //lanternBody->setType(reactphysics3d::BodyType::STATIC);
+  auto boundingBox = renderer->getResourceRepo()->getLampMesh()->getBoundingBox();
+  auto extends = (boundingBox.max - boundingBox.min) / 2;
+  const rp3d::Vector3 lanternHalfExtends(extends.x, extends.y, extends.z);
+  rp3d::BoxShape lanternShape(lanternHalfExtends);
+  rp3d::ProxyShape* lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
+  renderer->addLantern(lanternProxy, &lanternShape);
+
+
 
   auto sun = new Light();
-  sun->position = Vector3(0,40,0);
-  sun->color = Vector3(1)*13000;
-  sun->quadratic = 0.5;
+  sun->position = Vector3(-80,80,0);
+  sun->color = Vector3(1)*10;
+  sun->quadratic = 0.2;
   renderer->addLight(sun);
 
   std::vector<Light*> lights;
@@ -52,10 +63,34 @@ int main() {
     lights.push_back(light);
   }
 
+  for(int i=0; i<30; i++) {
+    rp3d::Transform cubeTransform(rp3d::Vector3(5.5*i, 4*i, 10),
+                                  rp3d::Quaternion::fromEulerAngles(0,0,0));
+    rp3d::RigidBody *cubeBody = world.createRigidBody(cubeTransform);
+    cubeBody->setType(reactphysics3d::BodyType::STATIC);
+    rp3d::Material &cubeMaterial = cubeBody->getMaterial();
+    cubeMaterial.setBounciness(0.3);
+    cubeMaterial.setFrictionCoefficient(1);
+    rp3d::ProxyShape *cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
+    renderer->addCube(cubeProxy, &boxShape);
+
+    rp3d::Transform lanternTransform(rp3d::Vector3(5.5*i, 4*i+5, 10),
+                                     rp3d::Quaternion().identity());
+    rp3d::RigidBody *lanternBody = world.createRigidBody(lanternTransform);
+    //lanternBody->setType(reactphysics3d::BodyType::STATIC);
+    rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
+    auto lantern = renderer->addLantern(lanternProxy, &lanternShape);
+    lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 70;
+  }
+
   int tick=1;
   while(!renderer->shouldClose())
   {
-    if (tick++%150 == 0) {
+    float lightness = std::fmax(1 - glfwGetTime() / 10, 0);
+    sun->color = Vector3(1) * 3000 * lightness;
+    renderer->setLightness(lightness);
+    if (tick++%81 == 0) {
+      /*
       rp3d::Transform cubeTransform(rp3d::Vector3(10*sin(glfwGetTime()),35,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
       rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
       rp3d::Material &cubeMaterial = cubeBody->getMaterial();
@@ -63,6 +98,7 @@ int main() {
       cubeMaterial.setFrictionCoefficient(1);
       rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
       renderer->addCube(cubeProxy, &boxShape);
+       */
 
       /*
       rp3d::Transform sphereTransform(rp3d::Vector3(10 * sin(glfwGetTime()), 5, 10 * cos(glfwGetTime())),
@@ -74,6 +110,24 @@ int main() {
       rp3d::ProxyShape *sphereProxy = sphereBody->addCollisionShape(&sphereShape, cubeTransform, 100);
       renderer->addSphere(sphereProxy, &sphereShape);
        */
+
+      if (tick % 2 == 0) {
+        rp3d::Transform cubeTransform(rp3d::Vector3(10*sin(glfwGetTime()),35,10*cos(glfwGetTime())), rp3d::Quaternion::fromEulerAngles(0, 0, 0));
+        rp3d::RigidBody* cubeBody = world.createRigidBody(cubeTransform);
+        rp3d::Material &cubeMaterial = cubeBody->getMaterial();
+        cubeMaterial.setBounciness(0.3);
+        cubeMaterial.setFrictionCoefficient(1);
+        rp3d::ProxyShape* cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
+        renderer->addCube(cubeProxy, &boxShape);
+      } else {
+        rp3d::Transform lanternTransform(rp3d::Vector3(20 * sin(glfwGetTime()), 5, 20 * cos(glfwGetTime())),
+                                         rp3d::Quaternion().identity());
+        rp3d::RigidBody *lanternBody = world.createRigidBody(lanternTransform);
+        //lanternBody->setType(reactphysics3d::BodyType::STATIC);
+        rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
+        auto lantern = renderer->addLantern(lanternProxy, &lanternShape);
+        lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 70;
+      }
     }
 
     world.update(1.0/60.0);
