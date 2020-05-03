@@ -36,8 +36,8 @@ public:
       glVertexArrayElementBuffer(m_vao, m_veb);
       glBindVertexArray(0);
     }
-    void prepare(const Vector2 &screenSize, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
-      m_shader->prepare(screenSize, camera, gbuffer, skyboxTex, lightness);
+    void prepare(const Vector2 &screenSize, const Camera::Camera* camera, const GBuffer* gbuffer, float lightness) const {
+      m_shader->prepare(screenSize, camera, gbuffer, lightness);
       glBindVertexArray(m_vao);
     }
 

@@ -28,32 +28,21 @@ static const char* lighting_fs_src = R"(
       layout(location = 7) uniform sampler2D lightingTex;
       layout(location = 8) uniform vec3 lightProperties;
 
-      layout(location = 9) uniform vec2 screenSize;
+      layout(location = 9) uniform vec2 screenCorrection;
       layout(location = 10) uniform vec3 lightPos;
       layout(location = 11) uniform vec3 lightCol;
-      layout(location = 12) uniform samplerCube skyboxTex;
       layout(location = 13) uniform float lightness;
 
 
       in vec3 volumeWorldPos;
       out vec4 color;
 
-      vec3 sampleSkybox(vec3 coords) {
-          return texture(skyboxTex, coords).xyz * 2 * lightness;
-      }
-
       void main()
       {
           //color = vec4(1,1,1,0.2f); return;
-          vec2 uv = gl_FragCoord.xy / screenSize;
+          vec2 uv = gl_FragCoord.xy * screenCorrection;
 
           vec3 fragNormal = normalize(texture(normalTex, uv).xyz);
-          // Fragment is outside the world
-          if (dot(fragNormal, fragNormal) < 0.99) {
-              return;
-          }
-
-
           vec3 fragPos = texture(posTex, uv).xyz;
           vec3 fragColor = texture(albedoTex, uv).xyz;
 
@@ -69,19 +58,18 @@ static const char* lighting_fs_src = R"(
           float falloff = 1.0f / (falloff_const_term + falloff_linear_term * lightDis + falloff_quadratic_term * lightDis2);
 
 
-          vec3 lightNormal = lightRay / lightDis;
+          vec3 lightNormal = normalize(lightRay);
           float diffuse = max(dot(lightNormal, fragNormal), 0);
 
           vec3 lightingValues = texture(lightingTex, uv).rgb;
 
           vec3 eye = normalize(fragPos - uCamPos);
-          vec3 refl = normalize(reflect(eye, fragNormal));
+          vec3 refl = reflect(eye, fragNormal);
           float spec = pow(max(dot(refl, lightNormal), 0), 30) * lightingValues.x;
 
-          float ambient = 0.0f;
           float albedoDamp = max(1 - lightingValues.y - lightingValues.z, 0);
 
-          color = vec4(ambient * fragColor + (diffuse + spec) * albedoDamp * fragColor * lightCol * falloff, 1);
+          color = vec4((diffuse * albedoDamp + spec) * fragColor * lightCol * falloff, 1);
       }
     )";
 
@@ -94,9 +82,9 @@ public:
       GLuint fs = CompileShader(GL_FRAGMENT_SHADER, lighting_fs_src);
       m_program = GenerateProgram(vs, fs);
     }
-    void prepare(const Vector2 screenSize, const Camera::Camera* camera, const GBuffer* gbuffer, GLuint skyboxTex, float lightness) const {
+    void prepare(const Vector2 screenSize, const Camera::Camera* camera, const GBuffer* gbuffer, float lightness) const {
       glUseProgram(m_program);
-      glUniform2f(SH_UN_SCREENSIZE, screenSize.x, screenSize.y);
+      glUniform2f(SH_UN_SCREENCORRECTION, 1.0f / screenSize.x, 1.0f / screenSize.y);
 
       mat4x4 e_camera;
       camera->getMatrix().unpack(e_camera);
@@ -116,10 +104,6 @@ public:
       glUniform1i(SH_UN_ALBEDOTEX, 2);
       glActiveTexture(GL_TEXTURE2);
       glBindTexture(GL_TEXTURE_2D, gbuffer->getAlbedoTexture());
-
-      glUniform1i(SH_UN_SKYBOXTEX, 3);
-      glActiveTexture(GL_TEXTURE3);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
 
       glUniform1i(SH_UN_LIGHTINGTEX, 4);
       glActiveTexture(GL_TEXTURE4);
@@ -146,9 +130,8 @@ public:
     static int SH_UN_POSTEX;
     static int SH_UN_NORMALTEX;
     static int SH_UN_ALBEDOTEX;
-    static int SH_UN_SKYBOXTEX;
     static int SH_UN_LIGHTINGPROPERTIES;
-    static int SH_UN_SCREENSIZE;
+    static int SH_UN_SCREENCORRECTION;
     static int SH_UN_LIGHTPOS;
     static int SH_UN_LIGHTCOLOR;
     static int SH_UN_LIGHTINGTEX;
@@ -165,9 +148,8 @@ int LightingShader::SH_UN_NORMALTEX= 5;
 int LightingShader::SH_UN_ALBEDOTEX= 6;
 int LightingShader::SH_UN_LIGHTINGTEX = 7;
 int LightingShader::SH_UN_LIGHTINGPROPERTIES = 8;
-int LightingShader::SH_UN_SCREENSIZE= 9;
+int LightingShader::SH_UN_SCREENCORRECTION= 9;
 int LightingShader::SH_UN_LIGHTPOS= 10;
 int LightingShader::SH_UN_LIGHTCOLOR= 11;
-int LightingShader::SH_UN_SKYBOXTEX= 12;
 int LightingShader::SH_UN_LIGHTNESS = 13;
 

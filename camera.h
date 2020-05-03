@@ -13,7 +13,7 @@ private:
 
 public:
    Camera(float fov);
-   void update(float ratio, Keyboard* keyboard);
+   void update(float ratio, Keyboard* keyboard, float distToGround = 0);
    Vector3 pos;
     Vector3 velocity;
    Matrix4 getMatrix() const { return matrix; }
@@ -30,12 +30,13 @@ Camera::Camera(float fov)
   gravity = 0.05f;
 }
 
-void Camera::update(float ratio, Keyboard* keyboard)
+void Camera::update(float ratio, Keyboard* keyboard, float distToGround)
 {
   pos += velocity;
-  velocity += Vector3(0, -gravity, 0);
+  if (distToGround > 1)
+    velocity += Vector3(0, -gravity, 0);
 
-  if (keyboard->isPressed(JUMP))
+  if (keyboard->isDown(JUMP) && distToGround < 1)
     velocity.y = 1.5f;
   float speed = 0.8f;
   float rot_speed = 0.02f;

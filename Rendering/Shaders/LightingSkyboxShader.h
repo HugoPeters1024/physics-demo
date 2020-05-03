@@ -42,12 +42,6 @@ static const char* lighting_skybox_fs_src = R"(
           vec3 fragNormal = normalize(texture(normalTex, uv).xyz);
           vec3 fragColor = texture(albedoTex, uv).xyz;
 
-          // Fragment is outside the world
-          if (dot(fragNormal, fragNormal) < 0.99) {
-              color = vec4(0);
-              return;
-          }
-
           vec3 lightingValues = texture(lightingTex, uv).rgb;
 
           vec3 eye = normalize(fragPos - uCamPos);
@@ -59,7 +53,9 @@ static const char* lighting_skybox_fs_src = R"(
           vec3 refractedRay = refract(eye, fragNormal, ratio);
           vec3 refractedComponent = sampleSkybox(refractedRay) * lightingValues.z;
 
-          color = clamp(vec4(reflectedComponent + refractedComponent + fragColor * lightness, 1), 0, 1);
+          float ambientLeft = max(1 - lightingValues.y - lightingValues.z,0);
+
+          color = clamp(vec4(reflectedComponent + refractedComponent + fragColor * lightness * ambientLeft, 1), 0, 1);
       }
     )";
 

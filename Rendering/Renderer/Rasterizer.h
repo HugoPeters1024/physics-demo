@@ -105,7 +105,7 @@ void Rasterizer::loop(const Camera::Camera* camera) {
           m_lightness);
   glCullFace(GL_FRONT);
 
-  resourceRepo->getVolumeMesh()->prepare(screenSize, camera, gbuffer.get(), resourceRepo->getSkyBoxTexture(), m_lightness);
+  resourceRepo->getVolumeMesh()->prepare(screenSize, camera, gbuffer.get(), m_lightness);
   for(Light* light : all_lights) {
     resourceRepo->getVolumeMesh()->draw(light);
   }

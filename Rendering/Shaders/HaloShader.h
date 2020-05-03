@@ -33,13 +33,12 @@ static const char* halo_fs_src = R"(
 
       void main()
       {
-         // Maybe geometry shader to make a circle that faces the camera?
           float maxCol = max(max(lightCol.x, lightCol.y), lightCol.z);
           vec3 normalizedColor = lightCol / maxCol;
           vec3 toCenter = (lightPos - volumeWorldPos) * 5;
           float dis2 = dot(toCenter, toCenter);
 
-          vec3 toCamera = (uCamPos - volumeWorldPos) * 0.25f;
+          vec3 toCamera = (uCamPos - volumeWorldPos) * 0.22f;
           float disToCamera2 = dot(toCamera, toCamera);
           color = vec4(vec3(lightCol/(dis2+disToCamera2+1))*0.2f,1);
       }

@@ -63,8 +63,9 @@ int main() {
     lights.push_back(light);
   }
 
-  for(int i=0; i<30; i++) {
-    rp3d::Transform cubeTransform(rp3d::Vector3(5.5*i, 4*i, 10),
+  for(int i=0; i<60; i++) {
+    float f = (float)i / 60.f;
+    rp3d::Transform cubeTransform(rp3d::Vector3(50*sin(f*10), 2*i, 50 * cos(f*10)),
                                   rp3d::Quaternion::fromEulerAngles(0,0,0));
     rp3d::RigidBody *cubeBody = world.createRigidBody(cubeTransform);
     cubeBody->setType(reactphysics3d::BodyType::STATIC);
@@ -74,13 +75,13 @@ int main() {
     rp3d::ProxyShape *cubeProxy = cubeBody->addCollisionShape(&boxShape, cubeTransform, 100);
     renderer->addCube(cubeProxy, &boxShape);
 
-    rp3d::Transform lanternTransform(rp3d::Vector3(5.5*i, 4*i+5, 10),
+    rp3d::Transform lanternTransform(rp3d::Vector3(50 * sin(f*10), 2*i+5, 50 * cos(f*10)),
                                      rp3d::Quaternion().identity());
     rp3d::RigidBody *lanternBody = world.createRigidBody(lanternTransform);
     //lanternBody->setType(reactphysics3d::BodyType::STATIC);
     rp3d::ProxyShape *lanternProxy = lanternBody->addCollisionShape(&lanternShape, lanternTransform, 1);
     auto lantern = renderer->addLantern(lanternProxy, &lanternShape);
-    lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 100;
+    lantern->getLight()->color = Vector3(1, 0.3, 0.2) * 1000;
   }
 
   int tick=1;
@@ -122,19 +123,21 @@ int main() {
 
     world.update(1.0/60.0);
     keyboard.swapBuffers();
-    camera.update(renderer->getWindowRatio(), &keyboard);
+
     Vector3 camPos = camera.getPosition();
     CameraRayCaster cacher(&camera);
 
-    rp3d::Ray ray1(rp3d::Vector3(camPos.x, camPos.y + 1, camPos.z), rp3d::Vector3(camPos.x, -100, camPos.z+0.1));
+    rp3d::Ray ray1(rp3d::Vector3(camPos.x, camPos.y + 10, camPos.z), rp3d::Vector3(camPos.x, camPos.y - 10, camPos.z+0.1));
     world.raycast(ray1, &cacher);
-    rp3d::Ray ray2(rp3d::Vector3(camPos.x, camPos.y + 1, camPos.z), rp3d::Vector3(camPos.x+0.1, -100, camPos.z));
+    rp3d::Ray ray2(rp3d::Vector3(camPos.x, camPos.y + 10, camPos.z), rp3d::Vector3(camPos.x+0.1, camPos.y - 10, camPos.z));
     world.raycast(ray2, &cacher);
-    rp3d::Ray ray3(rp3d::Vector3(camPos.x, camPos.y + 1, camPos.z), rp3d::Vector3(camPos.x-0.1, -100, camPos.z));
+    rp3d::Ray ray3(rp3d::Vector3(camPos.x, camPos.y + 10, camPos.z), rp3d::Vector3(camPos.x-0.1, camPos.y-10, camPos.z));
     world.raycast(ray3, &cacher);
-    rp3d::Ray ray4(rp3d::Vector3(camPos.x, camPos.y + 1, camPos.z), rp3d::Vector3(camPos.x, -100, camPos.z-0.1));
+    rp3d::Ray ray4(rp3d::Vector3(camPos.x, camPos.y + 10, camPos.z), rp3d::Vector3(camPos.x, camPos.y - 10, camPos.z-0.1));
     world.raycast(ray4, &cacher);
 
+    camera.update(renderer->getWindowRatio(), &keyboard, cacher.distToGround);
+    g_logInfo("%f", cacher.distToGround);
     renderer->loop(&camera);
 //    printf("%s\n", body->getLinearVelocity().to_string().c_str());
 
