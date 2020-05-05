@@ -40,7 +40,7 @@ static const char* halo_fs_src = R"(
 
           vec3 toCamera = (uCamPos - volumeWorldPos) * 0.22f;
           float disToCamera2 = dot(toCamera, toCamera);
-          color = vec4(vec3(lightCol/(dis2+disToCamera2+1))*0.2f,1);
+          color = vec4(vec3(lightCol/(dis2+disToCamera2+1))*0.05f,1);
       }
     )";
 

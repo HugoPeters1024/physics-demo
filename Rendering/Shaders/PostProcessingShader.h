@@ -37,13 +37,14 @@ void main()
   float corr = 0.1f;
   for(int i=0; i<10; i++)
   {
-    float f = i * corr * 3.1415 * 2;
-    vec2 offset = vec2(cos(f), sin(f)) * 0.03 * disfromcenter * cameraSpeed * 0.01;
+    float f = i * corr;
+    vec2 offset = fromcenter * cameraSpeed * 0.01 * f;
     color.r += texture(tex, uv + abberation * 0 + offset).r * corr;
     color.g += texture(tex, uv + abberation * 1 + offset).g * corr;
     color.b += texture(tex, uv + abberation * 2 + offset).b * corr;
   }
   color *= (1-disfromcenter*0.6);
+  color = color * 1.1 - 0.1;
 }
 )";
 

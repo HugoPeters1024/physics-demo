@@ -58,7 +58,7 @@ public:
           m_cube = std::make_shared<GenericMesh>("Models/cube.obj", getGBufferShader());
 
           m_logger.logDebug("Building lamp mesh");
-          m_lamp = std::make_shared<GenericMesh>("Models/lamp.obj", getGBufferShader(), 1.0/184);
+          m_lamp = std::make_shared<GenericMesh>("Models/lamp.obj", getGBufferShader(), 1.0/684);
 
           m_logger.logDebug("Building skybox mesh");
           m_skybox = std::make_shared<SkyboxMesh>("Models/cube.obj", getGBufferShaderSkybox());

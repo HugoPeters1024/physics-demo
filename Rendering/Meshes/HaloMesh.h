@@ -53,7 +53,7 @@ public:
 
       Matrix4 rotation = Matrix4::FromAxisRotations(-phi, -theta, 0);
       Matrix4 translation = Matrix4::FromTranslation(light->position);
-      Matrix4 scale = Matrix4::FromScale(light->radius());
+      Matrix4 scale = Matrix4::FromScale(light->radius()/4);
       m_shader->use(light, translation * scale * rotation);
       glDrawElements(GL_TRIANGLES, m_index_count, GL_UNSIGNED_INT, (void*)nullptr);
     }

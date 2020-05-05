@@ -116,7 +116,7 @@ void Rasterizer::loop(const Camera::Camera* camera, float camSpeed) {
   glDepthMask(GL_FALSE);
   resourceRepo->getHaloMesh()->prepare(camera);
   for(Light* light : all_lights) {
-    resourceRepo->getHaloMesh()->draw(light, camera);
+   resourceRepo->getHaloMesh()->draw(light, camera);
   }
   glDepthMask(GL_TRUE);
   glEnable(GL_CULL_FACE);

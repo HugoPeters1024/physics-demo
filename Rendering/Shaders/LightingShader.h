@@ -58,7 +58,7 @@ static const char* lighting_fs_src = R"(
           float falloff = 1.0f / (falloff_const_term + falloff_linear_term * lightDis + falloff_quadratic_term * lightDis2);
 
 
-          vec3 lightNormal = normalize(lightRay);
+          vec3 lightNormal = lightRay / lightDis;
           float diffuse = max(dot(lightNormal, fragNormal), 0);
 
           vec3 lightingValues = texture(lightingTex, uv).rgb;
